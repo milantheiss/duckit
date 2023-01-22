@@ -33,7 +33,7 @@ export default {
 	emits: ['update:modelValue', 'onChange', 'on'],
 	watch: {
 		input(newVal, oldVal) {
-			if (newVal > this.min && newVal < this.max) {
+			if (newVal >= this.min && newVal <= this.max) {
 				this.hideError()
 				this.$emit('update:modelValue', newVal)
 			} else {				

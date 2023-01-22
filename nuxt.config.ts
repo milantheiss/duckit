@@ -22,5 +22,8 @@ export default defineNuxtConfig({
 			ENVIORNMENT: process.env.ENVIORNMENT,
 			EVENT_ID: process.env.EVENT_ID,
 		}
-	}
+	},
+	modules: [
+		'@pinia/nuxt'
+	],
 });

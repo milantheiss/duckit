@@ -13,8 +13,8 @@ export default defineEventHandler(async (event) => {
 
     if(docs.length === 0) return { result: null, error: "No ticket found" };
 
-    return { result: docs[0] };
+    return { ticket: docs[0] };
   } catch (error: any) {
-    return { result: null, error: error.message };
+    return { ticket: null, error: error.message };
   } 
 });

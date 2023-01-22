@@ -38,12 +38,12 @@ export default defineEventHandler(async (event) => {
         email: body.email
       },
       updatedOn: serverTimestamp()
-    } as Ticket);
+    } as Ticket);    
     
-    const docs = await createMultipleTickets(query.event as string, tickets);
+    await createMultipleTickets(query.event as string, tickets);
 
-    return { result: docs };
+    return { ticketCodes: tickets.map((ticket) => ticket.ticketCode) };
   } catch (error: any) {
-    return { result: null, error: error.message };
+    return { ticketCodes: null, error: error.message };
   } 
 });

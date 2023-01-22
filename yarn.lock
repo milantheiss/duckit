@@ -922,6 +922,14 @@
     "vite-plugin-checker" "^0.5.1"
     "vue-bundle-renderer" "^1.0.0"
 
+"@pinia/nuxt@^0.4.6":
+  "integrity" "sha512-HjrYEfLdFpmsjhicPJgL36jVhzHWukIQPFFHGTSF84Cplu+f2nY2XHKqe9ToHzE9rLee2RjLOwAzOnXa/I/u6A=="
+  "resolved" "https://registry.npmjs.org/@pinia/nuxt/-/nuxt-0.4.6.tgz"
+  "version" "0.4.6"
+  dependencies:
+    "@nuxt/kit" "^3.0.0"
+    "pinia" ">=2.0.27"
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   "integrity" "sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ=="
   "resolved" "https://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz"
@@ -4039,6 +4047,14 @@
   "resolved" "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz"
   "version" "2.3.0"
 
+"pinia@^2.0.29", "pinia@>=2.0.27":
+  "integrity" "sha512-5z/KpFecq/cIgfeTnulJXldiLcTITRkTe3N58RKYSj0Pc1EdR6oyCdnf5A9jLoVwBqX5LtHhd0kGlpzWvk9oiQ=="
+  "resolved" "https://registry.npmjs.org/pinia/-/pinia-2.0.29.tgz"
+  "version" "2.0.29"
+  dependencies:
+    "@vue/devtools-api" "^6.4.5"
+    "vue-demi" "*"
+
 "pkg-types@^1.0.1":
   "integrity" "sha512-jHv9HB+Ho7dj6ItwppRDDl0iZRYBD0jsakHXtFgoLr+cHSF6xC+QL54sJmWxyGxOLYSHm0afhXhXcQDQqH9z8g=="
   "resolved" "https://registry.npmjs.org/pkg-types/-/pkg-types-1.0.1.tgz"
@@ -5326,6 +5342,11 @@
   dependencies:
     "ufo" "^1.0.0"
 
+"vue-demi@*":
+  "integrity" "sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A=="
+  "resolved" "https://registry.npmjs.org/vue-demi/-/vue-demi-0.13.11.tgz"
+  "version" "0.13.11"
+
 "vue-devtools-stub@^0.1.0":
   "integrity" "sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ=="
   "resolved" "https://registry.npmjs.org/vue-devtools-stub/-/vue-devtools-stub-0.1.0.tgz"
@@ -5346,23 +5367,7 @@
   dependencies:
     "@vue/devtools-api" "^6.4.5"
 
-"vue@^2.0.0":
-  "integrity" "sha512-b2qkFyOM0kwqWFuQmgd4o+uHGU7T+2z3T+WQp8UBjADfEv2n4FEMffzBmCKNP0IGzOEEfYjvtcC62xaSKeQDrQ=="
-  "resolved" "https://registry.npmjs.org/vue/-/vue-2.7.14.tgz"
-  "version" "2.7.14"
-  dependencies:
-    "@vue/compiler-sfc" "2.7.14"
-    "csstype" "^3.1.0"
-
-"vue@^2.0.1":
-  "integrity" "sha512-b2qkFyOM0kwqWFuQmgd4o+uHGU7T+2z3T+WQp8UBjADfEv2n4FEMffzBmCKNP0IGzOEEfYjvtcC62xaSKeQDrQ=="
-  "resolved" "https://registry.npmjs.org/vue/-/vue-2.7.14.tgz"
-  "version" "2.7.14"
-  dependencies:
-    "@vue/compiler-sfc" "2.7.14"
-    "csstype" "^3.1.0"
-
-"vue@^3.0.0", "vue@^3.2.0", "vue@^3.2.25", "vue@^3.2.45", "vue@>=2.7 || >=3", "vue@3.2.45":
+"vue@latest":
   "integrity" "sha512-9Nx/Mg2b2xWlXykmCwiTUCWHbWIj53bnkizBxKai1g61f2Xit700A1ljowpTIM11e3uipOeiPcSqnmBg6gyiaA=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-3.2.45.tgz"
   "version" "3.2.45"

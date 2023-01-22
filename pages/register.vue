@@ -1,22 +1,22 @@
 <template>
 	<div class="sm:w-[500px]">
-		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left" v-if="ticketCodes.length === 0">
+		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left" v-if="data.ticketCodes.length === 0">
 			<div v-show="!checkDetails">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Tickets registrieren</h1>
 
 				<div class="flex justify-between items-center mb-3">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Vorname:</p>
-					<TextInput v-model="buyer.firstname" placeholder="Vorname"
+					<TextInput v-model="data.buyer.firstname" placeholder="Vorname"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="fnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Nachname:</p>
-					<TextInput v-model="buyer.lastname" placeholder="Nachname"
+					<TextInput v-model="data.buyer.lastname" placeholder="Nachname"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="lnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
 					<p class="text-base sm:text-lg font-normal text-light-gray">E-Mail:</p>
-					<TextInput v-model="buyer.email" type="email" placeholder="E-Mail"
+					<TextInput v-model="data.buyer.email" type="email" placeholder="E-Mail"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="emailInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-6">
@@ -43,15 +43,15 @@
 
 				<div class="flex justify-between items-center mb-3">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Vorname:</p>
-					<p class="w-fit text-base sm:text-lg font-medium text-black">{{ buyer.firstname }}</p>
+					<p class="w-fit text-base sm:text-lg font-medium text-black">{{ data.buyer.firstname }}</p>
 				</div>
 				<div class="flex justify-between items-center mb-3">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Nachname:</p>
-					<p class="w-fit text-base sm:text-lg font-medium text-black">{{ buyer.lastname }}</p>
+					<p class="w-fit text-base sm:text-lg font-medium text-black">{{ data.buyer.lastname }}</p>
 				</div>
 				<div class="flex justify-between items-center mb-3">
 					<p class="text-base sm:text-lg font-normal text-light-gray">E-Mail:</p>
-					<p class="w-fit text-base sm:text-lg font-medium text-lblack">{{ buyer.email }}</p>
+					<p class="w-fit text-base sm:text-lg font-medium text-lblack">{{ data.buyer.email }}</p>
 				</div>
 				<div class="flex justify-between items-center mb-6">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Anzahl Tickets:</p>
@@ -75,14 +75,13 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-col bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left" v-if="ticketCodes.length > 0">
+		<div class="flex flex-col bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left" v-if="data.ticketCodes.length > 0">
 			<h1 class="text-xl sm:text-2xl font-bold ">Tickets erstellt...</h1>
 			<p class="text-base sm:text-lg font-normal text-dark-grey mb-3">
-				Werden an <span class="font-semibold">{{ buyer.email }}</span> versendet.
+				Werden an <span class="font-semibold">{{ data.buyer.email }}</span> versendet.
 			</p>
 			<ul class="list-['🎟️'] list-inside mb-3">
-				<li v-for="code in ticketCodes" :key="code"
-					class="text-base sm:text-lg font-bold text-black mb-1">
+				<li v-for="code in data.ticketCodes" :key="code" class="text-base sm:text-lg font-bold text-black mb-1">
 					<NuxtLink :to="'/?ticketCode=' + code" class="text-lg font-bold hover:underline ml-3">
 						{{ code }}
 					</NuxtLink>
@@ -102,8 +101,16 @@ import TextInput from '@/components/TextInput.vue'
 import NumberInput from '@/components/NumberInput.vue'
 import QrcodeVue from 'qrcode.vue'
 import CheckboxInput from '~~/components/CheckboxInput.vue'
+import { useDataStore } from '~~/store/dataStore'
 
 export default {
+	setup() {
+		const data = useDataStore();
+
+		return {
+			data,
+		};
+	},
 	name: 'TicketShopView',
 	components: {
 		TextInput,
@@ -113,13 +120,7 @@ export default {
 	},
 	data() {
 		return {
-			buyer: {
-				firstname: '',
-				lastname: '',
-				email: ''
-			},
 			amount: 1,
-			ticketCodes: [],
 			runtimeConfig: useRuntimeConfig(),
 			checkDetails: false,
 		}
@@ -128,7 +129,7 @@ export default {
 		async generateTickets() {
 			this.checkDetails = false
 
-			const body = this.buyer
+			const body = this.data.buyer
 
 			let res = await fetch(
 				`api/registerTicket?event=${this.runtimeConfig.EVENT_ID}&amount=${this.amount
@@ -142,20 +143,18 @@ export default {
 			)
 
 			res = await res.json()
-			console.log(res);
-			this.ticketCodes = res.ticketCodes
 
-			console.log(this.ticketCodes)
+			this.data.ticketCodes = res.ticketCodes
 		},
 		onContinue() {
-			if (this.buyer.firstname === '' || this.buyer.lastname === '' || this.buyer.email === '') {
+			if (this.data.buyer.firstname === '' || this.data.buyer.lastname === '' || this.data.buyer.email === '') {
 				this.$refs.error.throwError('Bitte fülle alle Felder aus')
 				return
 			}
 
 			const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-			if (!this.buyer.email.match(EMAIL_REGEX)) {
+			if (!this.data.buyer.email.match(EMAIL_REGEX)) {
 				this.$refs.error.throwError('Bitte gib eine gültige E-Mail Adresse an')
 				this.$refs.emailInput.showError()
 				this.$refs.emailInput.focus()
@@ -165,13 +164,13 @@ export default {
 			this.checkDetails = true
 		},
 		cancel() {
-			this.buyer = {
+			this.data.ticketCodes = []
+			this.data.buyer = {
 				firstname: '',
 				lastname: '',
 				email: ''
 			}
 			this.amount = 1
-			this.ticketCodes = []
 
 			this.checkDetails = false
 		}

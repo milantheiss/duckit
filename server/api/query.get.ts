@@ -4,10 +4,9 @@ import { queryByCollection } from "../lib/firestore";
 export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
-    console.log(query.col);
     
-    const docs = await queryByCollection(query.col as string);
-    return { result: docs };
+    const doc = await queryByCollection(query.ticketCode as string);
+    return { result: doc };
   } catch (error: any) {
     return { result: [], error: error.message };
   } 

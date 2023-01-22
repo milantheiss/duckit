@@ -1,20 +1,16 @@
 import { collection, getDocs, getDoc, addDoc, deleteDoc, doc, query, where, setDoc, collectionGroup, Timestamp, WhereFilterOp, QuerySnapshot, DocumentData, writeBatch } from "firebase/firestore";
 import { firestore } from "./firebase";
 
-export const queryByCollection = async (col: string) => {
+export const queryByCollection = async (ticketCode: string) => {
 	// @ts-ignore
-	const colRef = collection(firestore, col);
+	const docRef = doc(firestore, `events/c0i5itBYyWVfohFxhdfy/tickets?ticketCode=${ticketCode}`);
 
-	const snapshot = await getDocs(colRef);
+	const snapshot = await getDoc(docRef);
 
-	const docs = Array.from(snapshot.docs).map((doc) => {
-		return {
-			...doc.data(),
-			id: doc.id,
-		};
-	});
-
-	return docs;
+	return {
+    ...snapshot.data(),
+    id: snapshot.id,
+  };
 };
 
 interface QueryRequest {
@@ -49,8 +45,8 @@ export const getTicket = async (eventId: String, queryReq: QueryRequest): Promis
   } else {
     return null;
   }
-
 }
+
 interface Ticket {
   ticketCode: string;
   valid: boolean;
@@ -64,12 +60,12 @@ interface Ticket {
   updatedOn: Timestamp;
 }
 
-export const createMultipleTickets = async (eventId: String, ticket: Ticket[]) => {
+export const createMultipleTickets = async (eventId: String, tickets: Ticket[]) => {
   const batch = writeBatch(firestore);
 
   const colRef = collection(firestore, `events/${eventId}/tickets`);
 
-  ticket.forEach((t: Ticket) => {
+  tickets.map((t: Ticket) => {
     addDoc(colRef, t);
   });
 
