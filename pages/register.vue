@@ -112,6 +112,22 @@ export default {
 		const user = useSupabaseUser()
 		const nanoid = customAlphabet("346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz", 6);
 
+		definePageMeta({
+			middleware: ['auth']
+		})
+
+		useHead({
+			meta: [{ auth: true }]
+		})
+
+		onMounted(() => {
+            watchEffect(() => {
+                if (!user.value) {
+                    navigateTo('/login')
+                }
+            })
+        })
+
 		return {
 			data,
 			client,
@@ -139,24 +155,35 @@ export default {
 			this.checkDetails = false
 
 			const body = this.data.buyer
+			console.log(body);
 
-			const { buyer } = await this.client
-				.from('buyer')
-				.insert(body)
+			const { data: buyer, error } = await this.client
+				.from('buyers')
+				.upsert(body, {
+					onConflict: 'email',
+					ignoreDuplicates: false
+				})
 				.select()
+				.eq('email', body.email)
+				.maybeSingle()
+
+			console.log(buyer);
 
 			const tickets = new Array(this.amount).fill({
-				ticket_code: this.nanoid(),
+				ticketCode: this.nanoid(),
 				event: this.runtimeConfig.EVENT_ID,
 				buyer: buyer.id
 				//TODO: created_by
 			})
 
-			const { data } = await this.client
-				.from('ticket')
-				.insert(tickets)
+			console.log(tickets)
 
-			this.data.ticketCodes = data.ticketCodes
+			const { data } = await this.client
+				.from('tickets')
+				.insert(tickets)
+				.select()
+
+			this.data.ticketCodes = tickets.map(ticket => ticket.ticketCode)
 		},
 		onContinue() {
 			if (this.data.buyer.firstname === '' || this.data.buyer.lastname === '' || this.data.buyer.email === '') {
