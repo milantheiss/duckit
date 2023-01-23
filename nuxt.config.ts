@@ -19,11 +19,11 @@ export default defineNuxtConfig({
 			FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
 			FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
 			FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-			ENVIORNMENT: process.env.ENVIORNMENT,
+			ENVIRONMENT: process.env.ENVIRONMENT,
 			EVENT_ID: process.env.EVENT_ID,
 		}
 	},
 	modules: [
 		'@pinia/nuxt'
-	],
+	]
 });
