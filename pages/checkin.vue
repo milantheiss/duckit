@@ -96,13 +96,30 @@
 <script>
 export default {
     name: 'CheckInView',
-    setup(){
-		const client = useSupabaseClient()
+    setup() {
+        const client = useSupabaseClient()
+        const user = useSupabaseUser()
 
-		return {
-			client
-		}
-	},
+        definePageMeta({
+            middleware: ['auth']
+        })
+
+        useHead({
+			meta: [{ auth: true }]
+		})
+
+        onMounted(() => {
+            watchEffect(() => {
+                if (!user.value) {
+                    navigateTo('/login')
+                }
+            })
+        })
+
+        return {
+            client
+        }
+    },
     data() {
         return {
             ticketCode: '',

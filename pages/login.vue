@@ -1,7 +1,7 @@
 <template >
     <div class="md:w-120 sm:w-96">
         <div class="flex flex-col justify-center items-start ml-6 mb-4">
-            <p class="text-xl sm:text-2xl font-bold">Willkommen...</p>
+            <h1 class="text-xl sm:text-2xl font-bold">Willkommen...</h1>
             <p class="text-base sm:text-lg font-normal text-dark-grey">Bitte melde dich an</p>
         </div>
         <div class="bg-white px-6 py-6 rounded-lg drop-shadow-md w-full">
@@ -47,18 +47,22 @@ import TextInput from "@/components/TextInput.vue";
 
 export default {
     name: "LoginView",
-    // setup() {
-    //   const auth = useAuthStore()
-    //   const dataStore = useDataStore()
-    //   return {
-    //     auth,
-    //     dataStore
-    //   }
-    // },
 
     setup() {
-        const client = useSupabaseClient()
+        const client = useSupabaseAuthClient()
         const user = useSupabaseUser()
+
+        useHead({
+            meta: [{guest: true}]
+        })
+
+        onMounted(() => {
+			watchEffect(() => {
+				if (user.value) {
+					navigateTo('/checkin')
+				}
+			})
+		})
 
         return {
             client,
@@ -103,7 +107,7 @@ export default {
                 this.$refs.usernameInput.hideError()
 
                 throw new Error("Bitte gebe ein Passwort ein")
-            } else if (!user.username.match(EMAIL_REGEX)) { 
+            } else if (!user.username.match(EMAIL_REGEX)) {
                 this.$refs.error.throwError("Bitte gebe eine gültige E-Mail ein")
 
                 this.$refs.usernameInput.showError()
@@ -117,8 +121,13 @@ export default {
             }
 
             try {
-                const cred = await signInUser(user.username, user.password)
-                console.log(cred);
+                const { data, error } = await this.client.auth.signInWithPassword({
+                    email: user.username,
+                    password: user.password,
+                })
+
+                console.log(data);
+                console.log(error);
             } catch (error) {
                 console.error(error)
                 this.showError = true
