@@ -75,7 +75,8 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-col bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left" v-if="data.ticketCodes.length > 0">
+		<div class="flex flex-col bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left"
+			v-if="data.ticketCodes.length > 0">
 			<h1 class="text-xl sm:text-2xl font-bold ">Tickets erstellt...</h1>
 			<p class="text-base sm:text-lg font-normal text-dark-grey mb-3">
 				Werden an <span class="font-semibold">{{ data.buyer.email }}</span> versendet.
@@ -102,13 +103,20 @@ import NumberInput from '@/components/NumberInput.vue'
 import QrcodeVue from 'qrcode.vue'
 import CheckboxInput from '~~/components/CheckboxInput.vue'
 import { useDataStore } from '~~/store/dataStore'
+import { customAlphabet } from "nanoid";
 
 export default {
 	setup() {
 		const data = useDataStore();
+		const client = useSupabaseClient()
+		const user = useSupabaseUser()
+		const nanoid = customAlphabet("346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz", 6);
 
 		return {
 			data,
+			client,
+			user,
+			nanoid
 		};
 	},
 	name: 'TicketShopView',
@@ -123,6 +131,7 @@ export default {
 			amount: 1,
 			runtimeConfig: useRuntimeConfig(),
 			checkDetails: false,
+			loading: null
 		}
 	},
 	methods: {
@@ -131,20 +140,23 @@ export default {
 
 			const body = this.data.buyer
 
-			let res = await fetch(
-				`api/registerTicket?event=${this.runtimeConfig.EVENT_ID}&amount=${this.amount
-				}`,
-				{
-					method: 'POST',
-					headers: { 'Content-type': 'application/json; charset=UTF-8' },
-					body: JSON.stringify(body),
-					mode: 'cors'
-				}
-			)
+			const { buyer } = await this.client
+				.from('buyer')
+				.insert(body)
+				.select()
 
-			res = await res.json()
+			const tickets = new Array(this.amount).fill({
+				ticket_code: this.nanoid(),
+				event: this.runtimeConfig.EVENT_ID,
+				buyer: buyer.id
+				//TODO: created_by
+			})
 
-			this.data.ticketCodes = res.ticketCodes
+			const { data } = await this.client
+				.from('ticket')
+				.insert(tickets)
+
+			this.data.ticketCodes = data.ticketCodes
 		},
 		onContinue() {
 			if (this.data.buyer.firstname === '' || this.data.buyer.lastname === '' || this.data.buyer.email === '') {

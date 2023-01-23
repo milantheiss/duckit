@@ -53,6 +53,16 @@ export default {
     //     dataStore
     //   }
     // },
+
+    setup() {
+        const client = useSupabaseClient()
+        const user = useSupabaseUser()
+
+        return {
+            client,
+            user
+        }
+    },
     components: { ErrorMessage, TextInput },
     data() {
         return {
@@ -61,7 +71,8 @@ export default {
                 username: "",
                 password: "",
             },
-            showError: false
+            showError: false,
+            loading: null
         };
     },
     methods: {
@@ -69,27 +80,36 @@ export default {
             const user = this.form
             console.log(user);
 
+            const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
             if (user.username === "" && user.password === "") {
-                this.$refs.error.throwError("Bitte gib einen Benutzernamen und ein Passwort ein")
+                this.$refs.error.throwError("Bitte gebe einen Benutzernamen und ein Passwort ein")
 
                 this.$refs.usernameInput.showError()
                 this.$refs.passwordInput.showError()
 
-                throw new Error("Bitte gib einen Benutzernamen und ein Passwort ein")
+                throw new Error("Bitte gebe einen Benutzernamen und ein Passwort ein")
             } else if (user.username === "") {
-                this.$refs.error.throwError("Bitte gib einen Benutzernamen ein")
+                this.$refs.error.throwError("Bitte gebe einen Benutzernamen ein")
 
                 this.$refs.usernameInput.showError()
                 this.$refs.passwordInput.hideError()
 
-                throw new Error("Bitte gib einen Benutzernamen ein")
+                throw new Error("Bitte gebe einen Benutzernamen ein")
             } else if (user.password === "") {
-                this.$refs.error.throwError("Bitte gib ein Passwort ein")
+                this.$refs.error.throwError("Bitte gebe ein Passwort ein")
 
                 this.$refs.passwordInput.showError()
                 this.$refs.usernameInput.hideError()
 
-                throw new Error("Bitte gib ein Passwort ein")
+                throw new Error("Bitte gebe ein Passwort ein")
+            } else if (!user.username.match(EMAIL_REGEX)) { 
+                this.$refs.error.throwError("Bitte gebe eine gültige E-Mail ein")
+
+                this.$refs.usernameInput.showError()
+                this.$refs.passwordInput.hideError()
+
+                throw new Error("Bitte gebe eine gültige E-Mail ein")
             } else {
                 this.$refs.error.hideError()
                 this.$refs.usernameInput.hideError()

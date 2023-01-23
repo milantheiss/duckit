@@ -45,7 +45,7 @@
 				<p v-show="ticket.valid" class="text-xl">
 					Gekauft am
 					<span class="font-bold">{{
-						new Date(ticket.createdOn.seconds * 1000).toLocaleDateString('de-DE', {
+						new Date(ticket.createdAt).toLocaleDateString('de-DE', {
 							year: 'numeric',
 							month: 'short',
 							day: 'numeric',
@@ -55,8 +55,7 @@
 				</p>
 				<p v-if="!ticket.valid" class="text-xl">
 					Entwertet am <span class="font-bold">{{
-						new Date(ticket.validatedOn.seconds *
-							1000).toLocaleString('de-DE', {
+						new Date(ticket.validatedAt).toLocaleString('de-DE', {
 								year: 'numeric',
 								month: 'short',
 								day: 'numeric',
@@ -74,6 +73,13 @@ import QrcodeVue from 'qrcode.vue'
 
 export default {
 	name: 'RenderTicketView',
+	setup(){
+		const client = useSupabaseClient()
+
+		return {
+			client
+		}
+	},
 	components: {
 		QrcodeVue
 	},
@@ -93,16 +99,22 @@ export default {
 	},
 	methods: {
 		async loadTicket(code) {
-			console.log(code);
 			if (code !== '' && typeof code !== 'undefined') {
 				this.$refs.error.hideError()
 				this.$refs.code.hideError()
 
-				const res = await $fetch(`api/ticket?event=${this.runtimeConfig.public.EVENT_ID}&ticketCode=${code}`)
-				if (res.error) {
+				const { data } = await this.client
+				.from('tickets')
+				.select()
+				.eq("ticketCode", code)
+				.maybeSingle()
+
+				console.log(data.create);
+
+				if (data === null) {
 					this.$refs.error.throwError("Der Ticket Code ist ungültig!")
 				} else {
-					this.ticket = res.ticket
+					this.ticket = data
 				}
 			} else {
 				this.$refs.error.throwError('Bitte gebe einen Code ein!')

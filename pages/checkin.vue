@@ -39,7 +39,8 @@
                         </path>
                     </g>
                 </svg>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="30" height="30" class="text-red-600 mr-2" v-show="!ticket.valid">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="30" height="30"
+                    class="text-red-600 mr-2" v-show="!ticket.valid">
                     <g fill="currentColor">
                         <path
                             d="M2.343 13.657A8 8 0 1 1 13.658 2.343 8 8 0 0 1 2.343 13.657ZM6.03 4.97a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042L6.94 8 4.97 9.97a.749.749 0 0 0 .326 1.275.749.749 0 0 0 .734-.215L8 9.06l1.97 1.97a.749.749 0 0 0 1.275-.326.749.749 0 0 0-.215-.734L9.06 8l1.97-1.97a.749.749 0 0 0-.326-1.275.749.749 0 0 0-.734.215L8 6.94Z">
@@ -50,12 +51,16 @@
             </h1>
             <p class="text-xl">
                 Gekauft von
-                <span class="font-bold">{{ ticket.buyer.firstname }} {{ ticket.buyer.lastname }}</span>
+                <span class="font-bold">{{ ticket.buyer?.firstname }} {{ ticket.buyer?.lastname }}</span>
             </p>
             <p class="text-xl">
-                am
+                Erstellt von
+                <span class="font-bold">TODO Creator</span>
+            </p>
+            <p class="text-xl">
+                Erstellt am
                 <span class="font-bold">{{
-                    new Date(ticket.createdOn.seconds * 1000).toLocaleDateString('de-DE', {
+                    new Date(ticket.createdAt).toLocaleDateString('de-DE', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -65,14 +70,13 @@
             </p>
             <p v-if="!ticket.valid" class="text-xl">
                 Entwertet am <span class="font-bold">{{
-                    new Date(ticket.validatedOn.seconds *
-                        1000).toLocaleString('de-DE', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: 'numeric',
-                        })
+                    new Date(ticket.validatedAt).toLocaleString('de-DE', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                    })
                 }}</span>
             </p>
             <ErrorMessage ref="loadError" class="mt-3"></ErrorMessage>
@@ -92,6 +96,13 @@
 <script>
 export default {
     name: 'CheckInView',
+    setup(){
+		const client = useSupabaseClient()
+
+		return {
+			client
+		}
+	},
     data() {
         return {
             ticketCode: '',
@@ -104,14 +115,23 @@ export default {
             console.log('loaded')
         },
         async loadTicket(code) {
-            const res = await $fetch(`api/ticket?event=${this.runtimeConfig.public.EVENT_ID}&ticketCode=${code}`)
-            if (res.error) {
+            console.log(code);
+
+            const { data } = await this.client
+                .from('tickets')
+                .select()
+                .eq("ticketCode", code)
+                .maybeSingle()
+
+            console.log(data);
+
+            if (data === null) {
                 this.$refs.codeInput.showError();
                 this.$refs.error.throwError("Der Ticket Code ist ungültig!")
             } else {
                 this.$refs.codeInput.hideError()
                 this.$refs.error.hideError()
-                this.ticket = res.ticket
+                this.ticket = data
             }
         },
         async validateTicket(code) {
