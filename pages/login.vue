@@ -5,7 +5,6 @@
             <p class="text-base sm:text-lg font-normal text-dark-grey">Bitte melde dich an</p>
         </div>
         <div class="bg-white px-6 py-6 rounded-lg drop-shadow-md w-full">
-            <form @submit.prevent="submit">
                 <div class="flex items-center mb-6 w-full">
                     <!--Avatar Icon-->
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-8 mr-4 text-dark-grey"
@@ -33,10 +32,9 @@
                 </div>
                 <ErrorMessage class="mx-3 my-6" ref="error" />
                 <div class="flex justify-end items-center text-lg mt-6">
-                    <button type="submit"
+                    <button @click="submit"
                         class="justify-center rounded-lg border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Login</button>
                 </div>
-            </form>
         </div>
     </div>
 </template>
@@ -68,6 +66,7 @@ export default {
     components: { ErrorMessage, TextInput },
     data() {
         return {
+            firebaseUser: useFirebaseUser(),
             form: {
                 username: "",
                 password: "",
@@ -79,6 +78,7 @@ export default {
     methods: {
         async submit() {
             const user = this.form
+            console.log(user);
 
             const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -116,6 +116,7 @@ export default {
                 this.$refs.passwordInput.hideError()
             }
 
+            
             try {
                 const cred = await signInUser(user.username, user.password)
                 console.log(cred);
