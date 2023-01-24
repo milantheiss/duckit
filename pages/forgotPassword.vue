@@ -23,6 +23,10 @@ export default {
     setup() {
         const client = useSupabaseClient()
 
+        useHead({
+			title: 'Bitte gebe deine E-Mail ein...'
+		})
+
         return {
             client
         }

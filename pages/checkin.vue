@@ -101,6 +101,7 @@ export default {
         })
 
         useHead({
+            title: 'Ticket kontrollieren',
             meta: [{ auth: true }]
         })
 

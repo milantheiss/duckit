@@ -50,6 +50,7 @@ export default {
         const user = useSupabaseUser()
 
         useHead({
+            title: 'Login',
             meta: [{ guest: true }]
         })
 

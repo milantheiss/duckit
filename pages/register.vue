@@ -116,6 +116,7 @@ export default {
 		})
 
 		useHead({
+			title: 'Ticket erstellen',
 			meta: [{ auth: true }]
 		})
 

@@ -78,6 +78,7 @@ export default {
 		const user = useSupabaseUser()
 
 		useHead({
+			title: "Ticket anzeigen",
 			meta: [{ guest: true }]
 		})
 

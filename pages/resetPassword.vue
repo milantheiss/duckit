@@ -21,6 +21,10 @@ export default {
     setup() {
         const client = useSupabaseClient()
 
+        useHead({
+			title: 'Bitte gebe dein neues Passwort ein...'
+		})
+
         return {
             client
         }

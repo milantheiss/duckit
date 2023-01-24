@@ -9,6 +9,10 @@ export default {
 		onMounted(() => {
 			navigateTo('/ticket')
 		})
+		
+		useHead({
+			title: 'LGS ABI 2023'
+			})
 	}
 }
 </script>
