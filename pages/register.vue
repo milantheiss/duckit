@@ -83,7 +83,7 @@
 			</p>
 			<ul class="list-['🎟️'] list-inside mb-3">
 				<li v-for="code in data.ticketCodes" :key="code" class="text-base sm:text-lg font-bold text-black mb-1">
-					<NuxtLink :to="'/?ticketCode=' + code" class="text-lg font-bold hover:underline ml-3">
+					<NuxtLink :to="'/ticket?code=' + code" class="text-lg font-bold hover:underline ml-3">
 						{{ code }}
 					</NuxtLink>
 				</li>
