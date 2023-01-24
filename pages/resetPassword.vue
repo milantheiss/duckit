@@ -4,14 +4,13 @@
             <h1 class="text-xl sm:text-2xl font-bold">Passwort zurücksetzen...</h1>
             <p class="text-base sm:text-lg font-normal text-dark-grey mb-3">Bitte gebe dein neues Passwort ein.</p>
             <div class="flex items-center w-full">
-                <TextInput ref="password" type="password" v-model="newPassword" class="text-lg"/>
+                <TextInput ref="password" type="password" v-model="newPassword"
+                    class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" />
             </div>
             <ErrorMessage class="mx-3 my-3" ref="error" />
-            <div class="flex justify-end items-center text-lg mt-3">
-                <button
-                    class="justify-center rounded-lg border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    @click="resetPassword">Zurücksetzen</button>
-            </div>
+            <button
+                class="w-full mt-6 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                @click="resetPassword">Zurücksetzen</button>
         </div>
     </div>
 </template>
