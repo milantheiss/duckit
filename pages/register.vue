@@ -1,5 +1,5 @@
 <template>
-	<div class="sm:w-[500px]">
+	<div class="sm:w-[460px]">
 		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left" v-if="data.ticketCodes.length === 0">
 			<div v-show="!checkDetails">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Tickets registrieren</h1>
@@ -61,6 +61,7 @@
 					<p class="text-base sm:text-lg font-medium text-black">* Du bestätigst, dass die Daten korrekt sind.
 						Die Ticket werden automatisch per E-Mail versendet.</p>
 				</div>
+				<ErrorMessage ref="genError" class="mb-6"></ErrorMessage>
 				<div class="flex justify-between items-center sm:mx-6">
 					<button
 						class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -103,14 +104,12 @@ import NumberInput from '@/components/NumberInput.vue'
 import QrcodeVue from 'qrcode.vue'
 import CheckboxInput from '~~/components/CheckboxInput.vue'
 import { useDataStore } from '~~/store/dataStore'
-import { customAlphabet } from "nanoid";
 
 export default {
 	setup() {
 		const data = useDataStore();
 		const client = useSupabaseClient()
 		const user = useSupabaseUser()
-		const nanoid = customAlphabet("346789ABCDEFGHJKLMNPQRTUVWXYabcdefghijkmnpqrtwxyz", 6);
 
 		definePageMeta({
 			middleware: ['auth']
@@ -131,11 +130,10 @@ export default {
 		return {
 			data,
 			client,
-			user,
-			nanoid
+			user
 		};
 	},
-	name: 'TicketShopView',
+	name: 'Register',
 	components: {
 		TextInput,
 		NumberInput,
@@ -152,8 +150,6 @@ export default {
 	},
 	methods: {
 		async generateTickets() {
-			this.checkDetails = false
-
 			const body = this.data.buyer
 
 			const { data: buyer, error } = await this.client
@@ -165,14 +161,11 @@ export default {
 				.select()
 				.eq('email', body.email)
 				.maybeSingle()
-
-			console.log("buyer", buyer);
-
+			
 			const tickets = new Array(this.amount).fill({
-				ticketCode: this.nanoid(),
 				event: this.runtimeConfig.EVENT_ID,
-				buyer: buyer.id
-				//TODO: created_by
+				buyer: buyer.id,
+				createdBy: this.user.id
 			})
 
 			const { data } = await this.client
@@ -180,9 +173,16 @@ export default {
 				.insert(tickets)
 				.select()
 
-			console.log('ticket', data);
+			console.log(data);
 
-			this.data.ticketCodes = tickets.map(ticket => ticket.ticketCode)
+			if(!data){
+				this.$refs.genError.throwError('Es ist ein Fehler aufgetreten. Versuche es erneut.')
+				return
+			}
+
+			this.checkDetails = false
+
+			this.data.ticketCodes = data.map(ticket => ticket.ticketCode)
 
 			const res = $fetch("/api/sendTicket", {
 				method: 'POST',
@@ -197,6 +197,8 @@ export default {
 				this.$refs.error.throwError('Bitte fülle alle Felder aus')
 				return
 			}
+
+			console.log(this.user);
 
 			const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 

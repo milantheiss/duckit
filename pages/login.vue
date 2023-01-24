@@ -29,7 +29,8 @@
                 </TextInput>
             </div>
             <ErrorMessage class="mx-3 my-6" ref="error" />
-            <div class="flex justify-end items-center text-lg mt-6">
+            <div class="flex flex-col justify-center items-end text-lg mt-3">
+                <NuxtLink to="/forgotPassword" class="font-medium text-lg hover:underline mb-3">Password vergessen?</NuxtLink>
                 <button @click="submit"
                     class="justify-center rounded-lg border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Login</button>
             </div>

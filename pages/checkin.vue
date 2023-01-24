@@ -26,7 +26,7 @@
             </div>
         </div>
         <!--Ticket Info-->
-        <div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left sm:w-[500px]"
+        <div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left sm:w-[460px]"
             v-if="typeof ticket !== 'undefined'">
             <h1 class="text-3xl font-bold mb-3 flex items-center" :class="{
                 'text-green-500': ticket.valid,
@@ -49,16 +49,12 @@
                 </svg>
                 {{ ticket.valid ? 'Gültig' : 'Ungültig' }}
             </h1>
-            <p class="text-xl">
-                Gekauft von
+            <p class="text-xl flex justify-between items-center">
+                Käufer:
                 <span class="font-bold">{{ ticket.buyer?.firstname }} {{ ticket.buyer?.lastname }}</span>
             </p>
-            <p class="text-xl">
-                Erstellt von
-                <span class="font-bold">TODO Creator</span>
-            </p>
-            <p class="text-xl">
-                Erstellt am
+            <p class="text-xl flex justify-between items-center" v-if="ticket.valid">
+                Erstellt am:
                 <span class="font-bold">{{
                     new Date(ticket.createdAt).toLocaleDateString('de-DE', {
                         year: 'numeric',
@@ -68,8 +64,8 @@
                     })
                 }}</span>
             </p>
-            <p v-if="!ticket.valid" class="text-xl">
-                Entwertet am <span class="font-bold">{{
+            <p v-if="!ticket.valid" class="text-xl flex justify-between items-center">
+                Entwertet am: <span class="font-bold">{{
                     new Date(ticket.validatedAt).toLocaleString('de-DE', {
                         year: 'numeric',
                         month: 'short',
@@ -80,13 +76,13 @@
                 }}</span>
             </p>
             <ErrorMessage ref="loadError" class="mt-3"></ErrorMessage>
-            <div class="flex justify-between items-center sm:mx-6 mt-6">
+            <div class="mt-6 flex items-center" :class="{'justify-between': ticket.valid, 'justify-center': !ticket.valid}">
                 <button @click="cancel()"
-                    class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Zurück
                 </button>
-                <button @click="validateTicket(ticket.ticketCode)"
-                    class="justify-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                <button @click="validateTicket(ticket.ticketCode)" v-if="ticket.valid"
+                    class="rounded-lg drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Entwerten
                 </button>
             </div>
@@ -105,8 +101,8 @@ export default {
         })
 
         useHead({
-			meta: [{ auth: true }]
-		})
+            meta: [{ auth: true }]
+        })
 
         onMounted(() => {
             watchEffect(() => {
@@ -128,11 +124,8 @@ export default {
         }
     },
     methods: {
-        onLoaded() {
-            console.log('loaded')
-        },
-        async loadTicket(code) {
-            console.log(code);
+        async loadTicket(code) {    
+            code = code.trim()
 
             const { data } = await this.client
                 .from('tickets')
@@ -140,31 +133,54 @@ export default {
                 .eq("ticketCode", code)
                 .maybeSingle()
 
-            console.log(data);
-
             if (data === null) {
                 this.$refs.codeInput.showError();
                 this.$refs.error.throwError("Der Ticket Code ist ungültig!")
             } else {
                 this.$refs.codeInput.hideError()
                 this.$refs.error.hideError()
+
+                const { data: buyer } = await this.client
+                    .from('buyers')
+                    .select()
+                    .eq("id", data.buyer)
+                    .maybeSingle()
+
+                if(buyer){
+                    data.buyer = buyer
+                }
+
                 this.ticket = data
             }
         },
         async validateTicket(code) {
-            const res = await $fetch(`api/validate?event=${this.runtimeConfig.public.EVENT_ID}&ticketCode=${code}`)
-            if (res.error) {
+            const { data, status } = await this.client
+                .from('tickets')
+                .update({ valid: false, validatedAt: new Date() })
+                .eq('ticketCode', code)
+                .select()
+                .maybeSingle()
+
+            if (status !== 200) {
                 this.$refs.loadError.throwError("Das Ticket konnte nicht entwertet werden!")
             } else {
+                const { data: buyer } = await this.client
+                    .from('buyers')
+                    .select()
+                    .eq("id", data.buyer)
+                    .maybeSingle()
+
+                if(buyer){
+                    data.buyer = buyer
+                }
+                
                 this.$refs.loadError.hideError()
-                console.log(res);
-                this.ticket = res.ticket
+                this.ticket = data
             }
         },
         cancel() {
             this.ticket = undefined
             this.ticketCode = ''
-            console.log('cancle')
         }
     }
 }

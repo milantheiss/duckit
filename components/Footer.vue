@@ -1,12 +1,18 @@
 <template>
-    <div class="flex flex-col justify-center items-center">
-        <NuxtLink to="/login" class="text-lg font-semibold mb-4 before:content-['↗️']" v-show="!isAuthenticated">
-            <span class="hover:underline">Login</span>
-        </NuxtLink>
-        <p @click="logout" class="text-lg font-semibold mb-4 before:content-['↗️'] cursor-pointer" v-show="isAuthenticated ">
-            <span class="hover:underline">Logout</span>
-        </p>
-        <p class="w-max flex font-light">🧑‍💻 <a href="https://milantheiss.de" class="hover:underline mx-1">Milan
+    <div class="flex flex-col justify-center items-center ">
+        <div class="w-full flex justify-center items-center text-lg font-semibold mb-4">
+            <NuxtLink to="/login" class="text-lg font-semibold before:content-['↗️'] whitespace-nowrap" v-if="!isAuthenticated">
+                <span class="hover:underline">Login</span>
+            </NuxtLink>
+            <p @click="logout" class="text-lg font-semibold before:content-['↗️'] cursor-pointer  whitespace-nowrap" v-if="isAuthenticated ">
+                <span class="hover:underline">Logout</span>
+            </p>
+            <p class="mx-2">|</p>
+            <NuxtLink to="/legalNotice" class="text-lg font-semibold before:content-['↗️']">
+                <span class="hover:underline">Impress</span>
+            </NuxtLink>
+        </div>
+        <p class="w-max flex font-light mb-6">🧑‍💻 <a href="https://milantheiss.de" class="hover:underline mx-1">Milan
                 Theiß</a>| View
             on<a href="https://github.com/milantheiss/duckit" class="flex items-center hover:underline"> <svg
                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" class="mx-1">

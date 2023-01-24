@@ -108,6 +108,8 @@ export default {
 				this.$refs.error.hideError()
 				this.$refs.code.hideError()
 
+				code = code.trim()
+
 				const { data } = await this.client
 					.from('tickets')
 					.select()
