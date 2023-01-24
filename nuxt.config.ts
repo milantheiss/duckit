@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 	css: ["~/assets/css/main.css"],
 	runtimeConfig: {
 		SMTP_HOST: process.env.SMTP_HOST,
-		SMTP_POST: process.env.SMTP_POST,
+		SMTP_PORT: process.env.SMTP_PORT,
 		SMTP_USER: process.env.SMTP_USER,
 		SMTP_PASSWORD: process.env.SMTP_PASSWORD,
 

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 	const transporter = nodemailer.createTransport({
 		// @ts-ignore
 		host: config.SMTP_HOST,
-		port: config.SMTP_POST,
+		port: config.SMTP_PORT,
 		auth: {
 			user: config.SMTP_USER,
 			pass: config.SMTP_PASSWORD,
@@ -145,7 +145,7 @@ async function generatePDF(ticketCode: string) {
 	pdf
 		.setFont("Ubuntu-Bold")
 		.setFontSize(30)
-		.textWithLink(`${ticketCode}`, 41, 173.213, { url: `https://lgs-abi2023.de/ticket?code=${ticketCode}` });
+		.textWithLink(`${ticketCode}`, 54, 173.213, { url: `https://lgs-abi2023.de/ticket?code=${ticketCode}` });
 
 	return pdf.output("datauristring");
 }
