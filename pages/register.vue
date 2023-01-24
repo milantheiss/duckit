@@ -68,9 +68,9 @@
 						Abbrechen
 					</button>
 					<button
-						class="justify-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+						class="justify-center items-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 						@click="generateTickets()">
-						Bestätigen
+						<span class="ml-2">Bestätigen</span>
 					</button>
 				</div>
 			</div>
@@ -121,12 +121,12 @@ export default {
 		})
 
 		onMounted(() => {
-            watchEffect(() => {
-                if (!user.value) {
-                    navigateTo('/login')
-                }
-            })
-        })
+			watchEffect(() => {
+				if (!user.value) {
+					navigateTo('/login')
+				}
+			})
+		})
 
 		return {
 			data,
@@ -155,7 +155,6 @@ export default {
 			this.checkDetails = false
 
 			const body = this.data.buyer
-			console.log(body);
 
 			const { data: buyer, error } = await this.client
 				.from('buyers')
@@ -167,7 +166,7 @@ export default {
 				.eq('email', body.email)
 				.maybeSingle()
 
-			console.log(buyer);
+			console.log("buyer", buyer);
 
 			const tickets = new Array(this.amount).fill({
 				ticketCode: this.nanoid(),
@@ -176,14 +175,22 @@ export default {
 				//TODO: created_by
 			})
 
-			console.log(tickets)
-
 			const { data } = await this.client
 				.from('tickets')
 				.insert(tickets)
 				.select()
 
+			console.log('ticket', data);
+
 			this.data.ticketCodes = tickets.map(ticket => ticket.ticketCode)
+
+			const res = $fetch("/api/sendTicket", {
+				method: 'POST',
+				body: {
+					email: this.data.buyer.email,
+					ticketCodes: this.data.ticketCodes
+				}
+			})
 		},
 		onContinue() {
 			if (this.data.buyer.firstname === '' || this.data.buyer.lastname === '' || this.data.buyer.email === '') {

@@ -81,14 +81,6 @@ export default {
 			meta: [{ guest: true }]
 		})
 
-		onMounted(() => {
-			watchEffect(() => {
-				if (user.value) {
-					navigateTo('/checkin')
-				}
-			})
-		})
-
 		return {
 			client
 		}
@@ -121,8 +113,6 @@ export default {
 					.select()
 					.eq("ticketCode", code)
 					.maybeSingle()
-
-				console.log(data.create);
 
 				if (data === null) {
 					this.$refs.error.throwError("Der Ticket Code ist ungültig!")
