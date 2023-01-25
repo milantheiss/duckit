@@ -109,6 +109,10 @@ const submit = async () => {
             password: formuser.password,
         })
 
+        if (!data) {
+            navigateTo("/checkin")
+        }
+
         console.log(errorRes);
 
         console.log('Trying to login');
