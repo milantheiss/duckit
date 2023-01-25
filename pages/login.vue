@@ -40,6 +40,8 @@
 </template>
 
 <script setup>
+import { client } from 'process';
+
 
 const { auth } = useSupabaseAuthClient()
 const user = useSupabaseUser()
@@ -112,10 +114,7 @@ const submit = async () => {
         console.log(data);
 
         if (data) {
-            const accessToken = useCookie('sb-access-token')
-            const refreshToken = useCookie('sb-refresh-token')
-            accessToken.value = data.session.accessToken
-            refreshToken.value = data.session.refreshToken
+            auth.setSession(data.session)
         }
 
         console.log(errorRes);
