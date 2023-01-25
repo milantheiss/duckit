@@ -112,9 +112,12 @@ const error = ref(null)
 const genError = ref(null)
 const emailInput = ref(null)
 
-onMounted(() => {
+let user = {}
+
+onMounted(async () => {
+	user = await (await client.auth.getSession()).data;
 	watchEffect(() => {
-		if (!user.session.user) {
+		if (user.session === null) {
 			navigateTo('/login')
 		}
 	})
@@ -122,15 +125,14 @@ onMounted(() => {
 
 const dataStore = useDataStore();
 const client = useSupabaseClient()
-let { data: user } = await client.auth.getSession();
 
 definePageMeta({
+	auth: true,
 	middleware: ['auth']
 })
 
 useHead({
-	title: 'Ticket erstellen',
-	meta: [{ auth: true }]
+	title: 'Ticket erstellen'
 })
 
 async function generateTickets() {

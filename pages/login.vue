@@ -121,4 +121,15 @@ async function submit() {
         }
     })
 }
+
+onMounted(async () => {
+    const user = await (await useSupabaseClient().auth.getSession()).data;
+    watchEffect(() => {
+        if (user.session !== null) {
+            navigateTo('/register')
+        }
+    })
+}
+)
+
 </script>

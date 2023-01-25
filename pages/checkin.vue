@@ -102,25 +102,25 @@ const error = ref(null)
 
 // Site Setup & Meta
 definePageMeta({
+    auth: true,
     middleware: ['auth']
 })
 
 useHead({
-    title: 'Ticket kontrollieren',
-    meta: [{ auth: true }]
+    title: 'Ticket kontrollieren'
 })
 
+let user = {}
+
 // Lifecycle Hooks
-onMounted(() => {
+onMounted(async () => {
+    user = await (await client.auth.getSession()).data;
     watchEffect(() => {
-        if (!user.session.user) {
+        if (user.session === null) {
             navigateTo('/login')
         }
     })
 })
-
-// Darf erst nach onMounted aufgerufen werden
-let { data: user } = await client.auth.getSession();
 
 async function loadTicket(code) {
     code = code.trim()
