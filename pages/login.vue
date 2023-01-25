@@ -96,7 +96,7 @@ const submit = async () => {
 
         throw new Error("Bitte gebe eine gültige E-Mail ein")
     } else {
-        error.value.value.hideError()
+        error.value.hideError()
         emailInput.value.hideError()
         passwordInput.value.hideError()
     }
