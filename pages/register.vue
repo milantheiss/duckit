@@ -128,6 +128,8 @@ export default {
 		// 	})
 		// })
 
+		console.log(client.auth.user);
+
 		return {
 			data,
 			client,

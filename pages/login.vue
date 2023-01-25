@@ -30,113 +30,94 @@
             </div>
             <ErrorMessage class="mx-3 my-6" ref="error" />
             <div class="flex flex-col justify-center items-end text-lg mt-3">
-                <NuxtLink to="/forgotPassword" class="font-medium text-lg hover:underline mb-3">Password vergessen?</NuxtLink>
-                <button @click="submit"
+                <NuxtLink to="/forgotPassword" class="font-medium text-lg hover:underline mb-3">Password vergessen?
+                </NuxtLink>
+                <button @click="submit()"
                     class="justify-center rounded-lg border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">Login</button>
             </div>
         </div>
     </div>
 </template>
 
-<script>
-import ErrorMessage from "@/components/ErrorMessage.vue";
-import TextInput from "@/components/TextInput.vue";
+<script setup>
+const client = useSupabaseAuthClient()
+const user = useSupabaseUser()
+const form = {
+    email: "",
+    password: "",
+}
+const error = ref(null)
+const emailInput = ref(null)
+const passwordInput = ref(null)
 
-export default {
-    name: "LoginView",
+useHead({
+    title: 'Login',
+    meta: [{ guest: true }]
+})
 
-    setup() {
-        const client = useSupabaseAuthClient()
-        const user = useSupabaseUser()
-
-        useHead({
-            title: 'Login',
-            meta: [{ guest: true }]
-        })
-
-        onMounted(() => {
-            watchEffect(() => {
-                if (user.value) {
-                    navigateTo('/checkin')
-                }
-            })
-        })
-
-        return {
-            client,
-            user
+onMounted(() => {
+    watchEffect(() => {
+        if (user.value) {
+            navigateTo('/checkin')
         }
-    },
-    components: { ErrorMessage, TextInput },
-    data() {
-        return {
-            form: {
-                email: "",
-                password: "",
-            },
-            showError: false,
-            loading: null
-        };
-    },
-    methods: {
-        async submit() {
-            const user = this.form
-            console.log(user);
+    })
+})
 
-            const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const submit = async () => {
+    const formuser = form
+    console.log(formuser);
 
-            if (user.email === "" && user.password === "") {
-                this.$refs.error.throwError("Bitte gebe eine E-Mail und ein Passwort ein")
+    const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-                this.$refs.emailInput.showError()
-                this.$refs.passwordInput.showError()
+    // if (formuser.email === "" && formuser.password === "") {
+    //     error.throwError("Bitte gebe eine E-Mail und ein Passwort ein")
 
-                throw new Error("Bitte gebe eine E-Mail und ein Passwort ein")
-            } else if (user.email === "") {
-                this.$refs.error.throwError("Bitte gebe eine E-Mail ein")
+    //     emailInput.showError()
+    //     passwordInput.showError()
 
-                this.$refs.emailInput.showError()
-                this.$refs.passwordInput.hideError()
+    //     throw new Error("Bitte gebe eine E-Mail und ein Passwort ein")
+    // } else if (formuser.email === "") {
+    //     error.throwError("Bitte gebe eine E-Mail ein")
 
-                throw new Error("Bitte gebe eine E-Mail ein")
-            } else if (user.password === "") {
-                this.$refs.error.throwError("Bitte gebe ein Passwort ein")
+    //     emailInput.showError()
+    //     passwordInput.hideError()
 
-                this.$refs.passwordInput.showError()
-                this.$refs.emailInput.hideError()
+    //     throw new Error("Bitte gebe eine E-Mail ein")
+    // } else if (formuser.password === "") {
+    //     error.throwError("Bitte gebe ein Passwort ein")
 
-                throw new Error("Bitte gebe ein Passwort ein")
-            } else if (!user.email.match(EMAIL_REGEX)) {
-                this.$refs.error.throwError("Bitte gebe eine gültige E-Mail ein")
+    //     passwordInput.showError()
+    //     emailInput.hideError()
 
-                this.$refs.emailInput.showError()
-                this.$refs.passwordInput.hideError()
+    //     throw new Error("Bitte gebe ein Passwort ein")
+    // } else if (!formuser.email.match(EMAIL_REGEX)) {
+    //     error.throwError("Bitte gebe eine gültige E-Mail ein")
 
-                throw new Error("Bitte gebe eine gültige E-Mail ein")
-            } else {
-                this.$refs.error.hideError()
-                this.$refs.emailInput.hideError()
-                this.$refs.passwordInput.hideError()
-            }
+    //     emailInput.showError()
+    //     passwordInput.hideError()
+
+    //     throw new Error("Bitte gebe eine gültige E-Mail ein")
+    // } else {
+    //     error.hideError()
+    //     emailInput.hideError()
+    //     passwordInput.hideError()
+    // }
 
 
-            try {
-                const { data, error } = await this.client.auth.signInWithPassword({
-                    email: user.email,
-                    password: user.password,
-                })
+    try {
+        const { data, errorRes } = await client.auth.signInWithPassword({
+            email: formuser.email,
+            password: formuser.password,
+        })
 
-                if(data){
-                    useCookie(data)
-                }
+        watchEffect(async () => {
+            if (user.value) await navigateTo("/register");
+        });
 
-                console.log(data);
-                console.log(error);
-            } catch (error) {
-                console.error(error)
-                this.showError = true
-            }
-        },
+        console.log(data);
+        console.log(errorRes);
+    } catch (error) {
+        console.error(error)
     }
-};
+}
 </script>
