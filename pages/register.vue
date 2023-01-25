@@ -111,22 +111,22 @@ export default {
 		const client = useSupabaseClient()
 		const user = useSupabaseUser()
 
-		definePageMeta({
-			middleware: ['auth']
-		})
+		// definePageMeta({
+		// 	middleware: ['auth']
+		// })
 
 		useHead({
 			title: 'Ticket erstellen',
 			meta: [{ auth: true }]
 		})
 
-		onMounted(() => {
-			watchEffect(() => {
-				if (!user.value) {
-					navigateTo('/login')
-				}
-			})
-		})
+		// onMounted(() => {
+		// 	watchEffect(() => {
+		// 		if (!user.value) {
+		// 			navigateTo('/login')
+		// 		}
+		// 	})
+		// })
 
 		return {
 			data,
