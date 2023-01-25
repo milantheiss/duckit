@@ -41,8 +41,7 @@
 
 <script setup>
 const { auth } = useSupabaseAuthClient()
-const user = useSupabaseUser()
-const form = {
+let form = {
     email: "",
     password: "",
 }
@@ -55,7 +54,7 @@ useHead({
     meta: [{ guest: true }]
 })
 
-const submit = async () => {
+async function submit() {
     const formuser = form
     const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -100,15 +99,13 @@ const submit = async () => {
             password: formuser.password,
         })
 
-        console.log(data);
-
         if (data) {
             auth.setSession(data.session)
+            navigateTo("/register")
         } else {
             error.throwError("E-Mail oder Passwort falsch")
+            console.log(errorRes);
         }
-
-        console.log(errorRes);
 
         console.log('Trying to login');
     } catch (errorCatch) {
@@ -116,15 +113,11 @@ const submit = async () => {
     }
 
     auth.onAuthStateChange((_, _session) => {
-        console.log('Auth state changed');
-
         if (_session?.access_token) {
             const accessToken = useCookie('sb-access-token')
             const refreshToken = useCookie('sb-refresh-token')
             accessToken.value = _session?.access_token ?? null
             refreshToken.value = _session?.refresh_token ?? null
-            console.log('Setting cookies');
-
         }
     })
 }

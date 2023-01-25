@@ -17,6 +17,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
 	if (!data.session?.user && to.meta.auth) {
 		return navigateTo("/login");
 	} else if (data.session?.user && to.meta.guest) {
-		return navigateTo("/checkin");
+		return navigateTo("/register");
 	}
 });

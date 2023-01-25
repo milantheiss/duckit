@@ -20,12 +20,12 @@ export default defineEventHandler(async (event) => {
 
 	const html = (ticketCodes: string[]) => {
 		let html =
-			"<html><head><meta charset='utf-8'></head><body><h2>Tickets für die LGS Vofi am 03.02.2023</h2><p>Hier sind deine Codes. Bitte halte deinen QR Code und deinen Ausweis für die Einlasskontrolle bereit.</p><p>Wenn du noch nicht volljährig bist benötigst du auch einen <a href='https://muttizettel.net/'>Muttizettel</a>.</p><p>Den QR Code findest du im Anhang dieser E-Mail oder du kannst ihn dir auf unserer Website generieren lassen.</br>(Klicke einfach auf den Code)</p>";
+			"<html><head><meta charset='utf-8'></head><body><h2>Ticket für die LGS Vofi am 03.02.2023</h2><p>Bitte halte deinen QR Code und deinen Ausweis für die Einlasskontrolle bereit.</p><p>Wenn du noch nicht volljährig bist, benötigst du auch einen <a href='https://muttizettel.net/'>Muttizettel</a>.</p><p>Den QR Code findest du im Anhang dieser E-Mail oder du kannst ihn dir auf unserer Website generieren lassen. <br>(Klicke einfach auf den Code)</p>";
 		ticketCodes.forEach((ticketCode: string) => {
 			html += `<p><a href="https://lgs-abi2023.de/ticket?code=${ticketCode}">🎟️ <span id="ticket">${ticketCode}</span></a></p>`;
 		});
 		html +=
-			"<p>Viel Spaß </p><p id='footer'>Diese E-Mail wurde automatisch generiert. Bitte antworte nicht auf diese E-Mail. Bei Fragen kannst du uns auf Instagram <a href='https://www.instagram.com/lgs_vofis2023/'>@lgs_vofis2023</a> erreichen.</p></body><style>p {font-size: 1.2rem;} a {text-decoration: none;} #ticket:hover {text-decoration: underline;} #footer {font-size: 1.0rem;}</style></html>";
+			"<p>Viel Spaß</p><p id='footer'>Diese E-Mail wurde automatisch generiert. Bitte antworte nicht auf diese E-Mail.<br>Bei Fragen kannst du uns auf Instagram <a href='https://www.instagram.com/lgs_vofis2023/'>@lgs_vofis2023</a> erreichen.</p></body><style>p {font-size: 1.2rem;} a {text-decoration: none;} #ticket:hover {text-decoration: underline;} #footer {font-size: 1.0rem;}</style></html>";
 		return html;
 	};
 
@@ -53,9 +53,9 @@ export default defineEventHandler(async (event) => {
 		});
 
 		const mail = await transporter.sendMail({
-			from: "LGS Vofi Tickets <noreply@lgs-abi2023.de>",
+			from: "LGS Vofi Ticket <noreply@lgs-abi2023.de>",
 			to: data.email,
-			subject: "Deine Tickets für die LGS Vofi am 03.02.2023",
+			subject: "Deine Ticket für die LGS Vofi am 03.02.2023",
 			text: message(data.ticketCodes),
 			html: html(data.ticketCodes),
 			attachments: await Promise.all(attachments),
@@ -109,49 +109,46 @@ async function generatePDF(ticketCode: string) {
 	});
 
 	//Import Fonts von txt --> Findet file nicht
-	// const ubuntuBold = fs.readFileSync("public/fonts/Ubuntu-Bold.txt", "utf8");
-	// const ubuntuMedium = fs.readFileSync("public/fonts/Ubuntu-Medium.txt", "utf8");
-	// const ubuntuRegular = fs.readFileSync("public/fonts/Ubuntu-Regular.txt", "utf8");
+	const ubuntuBold = await (await fetch(`https://gist.githubusercontent.com/milantheiss/8b74605ce4f9af7c0b600ff376bdf269/raw/Ubuntu-Bold`)).text()
+	const ubuntuMedium = await (await fetch(`https://gist.githubusercontent.com/milantheiss/4223031336767ba0a6b839435a8de3e5/raw/Ubuntu-Regular`)).text()
+	const ubuntuRegular = await (await fetch(`https://gist.githubusercontent.com/milantheiss/b76fa6ff9cec5641247cd378d8ebb7e3/raw/Ubuntu-Medium`)).text()
 
-	// registerFont(pdf, ubuntuRegular, "Ubuntu-Regular");
-	// registerFont(pdf, ubuntuBold, "Ubuntu-Bold");
-	// registerFont(pdf, ubuntuMedium, "Ubuntu-Medium");
+	registerFont(pdf, ubuntuRegular, "Ubuntu-Regular");
+	registerFont(pdf, ubuntuBold, "Ubuntu-Bold");
+	registerFont(pdf, ubuntuMedium, "Ubuntu-Medium");
 
 	pdf.addImage(qrcode, "png", 25, 70.14, 98, 98);
 
 	pdf
-	// .setFont("Ubuntu-Bold")
+	.setFont("Ubuntu-Bold")
 	.setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
 
-	// let baseString = fs.readFileSync("/img/calendar_3d.png", "base64");
-	// const calIcon = "data:image/jpeg;base64," + baseString;
+	const calIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/1c3e70fa8ad1890b4458acc5a64fc87b/raw/calendar_icon")).text()
 
 	pdf
-	// .setFont("Ubuntu-Regular")
+	.setFont("Ubuntu-Regular")
 	.setFontSize(18)
-	// .addImage(calIcon, "PNG", 19, 32, 9, 9)
+	.addImage(calIcon, "PNG", 19, 32, 9, 9)
 	.text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
 
-	// baseString = fs.readFileSync("/img/pushpin_3d.png", "base64");
-	// const pushpinIcon = "data:image/jpeg;base64," + baseString;
+	const pushpinIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/9b8201b82c6777cf29263e9596bf867a/raw/pushpin_icon")).text()
 
 	pdf
-	// .addImage(pushpinIcon, "PNG", 19, 43, 9, 9)
+	.addImage(pushpinIcon, "PNG", 19, 43, 9, 9)
 	.text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
 
-	// baseString = fs.readFileSync("/img/warning_3d.png", "base64");
-	// const warningIcon = "data:image/jpeg;base64," + baseString;
+	const warningIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/f0763b7b8f00cc90b88cbeb2a4cd97ee/raw/warning_icon")).text()
 
 	pdf
-		// .setFont("Ubuntu-Medium")
+		.setFont("Ubuntu-Medium")
 		.setFontSize(20)
-		// .addImage(warningIcon, "PNG", 19, 52, 9, 9)
+		.addImage(warningIcon, "PNG", 19, 52, 9, 9)
 		.text("Bitte halte dieses Ticket", 33, 59.475)
 		.text("& dein Ausweis bei der ", 33, 67.475)
 		.text("Einlasskontrolle bereit!", 33, 74.475);
 
 	pdf
-		// .setFont("Ubuntu-Bold")
+		.setFont("Ubuntu-Bold")
 		.setFontSize(30)
 		.textWithLink(`${ticketCode}`, 54, 173.213, { url: `https://lgs-abi2023.de/ticket?code=${ticketCode}` });
 
