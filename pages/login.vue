@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-const client = useSupabaseAuthClient()
+const {auth} = useSupabaseAuthClient()
 const user = useSupabaseUser()
 const form = {
     email: "",
@@ -65,8 +65,6 @@ onMounted(() => {
 
 const submit = async () => {
     const formuser = form
-    console.log(formuser);
-
     const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     // if (formuser.email === "" && formuser.password === "") {
@@ -105,7 +103,7 @@ const submit = async () => {
 
 
     try {
-        const { data, errorRes } = await client.auth.signInWithPassword({
+        const { data, errorRes } = await auth.signInWithPassword({
             email: formuser.email,
             password: formuser.password,
         })
