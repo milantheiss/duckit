@@ -98,12 +98,15 @@ async function submit() {
             email: formuser.email,
             password: formuser.password,
         })
+        
+        console.log(data);
 
-        if (data) {
+        if (data.session !== null) {
+            console.log('Logged in');
             auth.setSession(data.session)
             navigateTo("/register")
         } else {
-            error.throwError("E-Mail oder Passwort falsch")
+            error.value.throwError("E-Mail oder Passwort falsch")
             console.log(errorRes);
         }
 
@@ -126,7 +129,7 @@ onMounted(async () => {
     const user = await (await useSupabaseClient().auth.getSession()).data;
     watchEffect(() => {
         if (user.session !== null) {
-            navigateTo('/register')
+            navigateTo('/checkin')
         }
     })
 }

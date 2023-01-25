@@ -27,7 +27,7 @@
         </div>
         <!--Ticket Info-->
         <div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left sm:w-[460px]"
-            v-if="typeof ticket !== 'undefined'">
+            v-if="Object.keys(ticket).length > 0">
             <h1 class="text-3xl font-bold mb-3 flex items-center" :class="{
                 'text-green-500': ticket.valid,
                 'text-red-600': !ticket.valid
@@ -92,23 +92,13 @@
 </template>
 <script setup>
 let ticketCode = ref('')
-let ticket = reactive(undefined)
+let ticket = reactive({})
 const client = useSupabaseClient()
 
 // Refs
 const codeInput = ref(null)
 const loadError = ref(null)
 const error = ref(null)
-
-// Site Setup & Meta
-definePageMeta({
-    auth: true,
-    middleware: ['auth']
-})
-
-useHead({
-    title: 'Ticket kontrollieren'
-})
 
 let user = {}
 
@@ -122,8 +112,21 @@ onMounted(async () => {
     })
 })
 
+// Site Setup & Meta
+definePageMeta({
+	auth: true,
+	middleware: ['auth']
+})
+
+useHead({
+    title: 'Ticket kontrollieren'
+})
+
+
 async function loadTicket(code) {
     code = code.trim()
+
+    console.log(code);
 
     const { data } = await client
         .from('tickets')
@@ -147,8 +150,7 @@ async function loadTicket(code) {
         if (buyer) {
             data.buyer = buyer
         }
-
-        ticket.value = data
+        ticket = data
     }
 }
 async function validateTicket(code) {
@@ -173,11 +175,11 @@ async function validateTicket(code) {
         }
 
         loadError.value.hideError()
-        ticket.value = data
+        ticket = data
     }
 }
 function cancel() {
-    ticket.value = undefined
+    ticket = undefined
     ticketCode.value = ''
 }
 </script>

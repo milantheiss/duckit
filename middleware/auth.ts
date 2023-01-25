@@ -13,11 +13,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
 		// 		return navigateTo("/login");
 		// 	}
 		// }
+
+	console.log(to.meta);
+	console.log(data);
 	
 	if (data.session === null && to.meta.auth) {
 		console.debug("No session, redirecting to login")
 		return navigateTo("/login");
 	} else if (data.session?.user !== null && to.meta.guest) {
+		console.debug("Session exists, redirecting to home")
 		return navigateTo("/register");
+	} else {
+		return true;
 	}
 });
