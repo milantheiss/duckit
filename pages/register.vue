@@ -106,10 +106,10 @@ import CheckboxInput from '~~/components/CheckboxInput.vue'
 import { useDataStore } from '~~/store/dataStore'
 
 export default {
-	setup() {
+	async setup() {
 		const data = useDataStore();
 		const client = useSupabaseClient()
-		const user = useSupabaseUser()
+		let { data: user } = await client.auth.getSession();
 
 		definePageMeta({
 			middleware: ['auth']
@@ -122,7 +122,7 @@ export default {
 
 		onMounted(() => {
 			watchEffect(() => {
-				if (!user.value) {
+				if (!user.session.user) {
 					navigateTo('/login')
 				}
 			})

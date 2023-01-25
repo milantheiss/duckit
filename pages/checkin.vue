@@ -92,9 +92,9 @@
 <script>
 export default {
     name: 'CheckInView',
-    setup() {
+    async setup() {
         const client = useSupabaseClient()
-        const user = useSupabaseUser()
+        let { data: user } = await client.auth.getSession();
 
         definePageMeta({
             middleware: ['auth']
@@ -107,7 +107,7 @@ export default {
 
         onMounted(() => {
             watchEffect(() => {
-                if (!user.value) {
+                if (!user.session.user) {
                     navigateTo('/login')
                 }
             })
