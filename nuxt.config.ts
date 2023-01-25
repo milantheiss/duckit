@@ -1,5 +1,10 @@
+import { fileURLToPath } from 'node:url';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+	alias: {
+		image: fileURLToPath(new URL("./public/img", import.meta.url)),
+	},
 	postcss: {
 		plugins: {
 			tailwindcss: {},

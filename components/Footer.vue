@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-col justify-center items-center ">
-        <div class="w-full flex justify-center items-center text-lg font-semibold mb-4">
+        <div class="w-full flex justify-center items-center text-lg font-semibold mb-4 ml-2">
             <NuxtLink to="/login" class="text-lg font-semibold before:content-['↗️'] whitespace-nowrap" v-if="!isAuthenticated">
                 <span class="hover:underline">Login</span>
             </NuxtLink>

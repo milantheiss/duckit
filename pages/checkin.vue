@@ -76,7 +76,8 @@
                 }}</span>
             </p>
             <ErrorMessage ref="loadError" class="mt-3"></ErrorMessage>
-            <div class="mt-6 flex items-center" :class="{'justify-between': ticket.valid, 'justify-center': !ticket.valid}">
+            <div class="mt-6 flex items-center"
+                :class="{ 'justify-between': ticket.valid, 'justify-center': !ticket.valid }">
                 <button @click="cancel()"
                     class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Zurück
@@ -89,100 +90,94 @@
         </div>
     </div>
 </template>
-<script>
-export default {
-    name: 'CheckInView',
-    async setup() {
-        const client = useSupabaseClient()
-        let { data: user } = await client.auth.getSession();
+<script setup>
+let ticketCode = ref('')
+let ticket = reactive(undefined)
+const client = useSupabaseClient()
 
-        definePageMeta({
-            middleware: ['auth']
-        })
+// Refs
+const codeInput = ref(null)
+const loadError = ref(null)
+const error = ref(null)
 
-        useHead({
-            title: 'Ticket kontrollieren',
-            meta: [{ auth: true }]
-        })
+// Site Setup & Meta
+definePageMeta({
+    middleware: ['auth']
+})
 
-        onMounted(() => {
-            watchEffect(() => {
-                if (!user.session.user) {
-                    navigateTo('/login')
-                }
-            })
-        })
+useHead({
+    title: 'Ticket kontrollieren',
+    meta: [{ auth: true }]
+})
 
-        return {
-            client
+// Lifecycle Hooks
+onMounted(() => {
+    watchEffect(() => {
+        if (!user.session.user) {
+            navigateTo('/login')
         }
-    },
-    data() {
-        return {
-            ticketCode: '',
-            ticket: undefined,
-            runtimeConfig: useRuntimeConfig(),
+    })
+})
+
+// Darf erst nach onMounted aufgerufen werden
+let { data: user } = await client.auth.getSession();
+
+async function loadTicket(code) {
+    code = code.trim()
+
+    const { data } = await client
+        .from('tickets')
+        .select()
+        .eq("ticketCode", code)
+        .maybeSingle()
+
+    if (data === null) {
+        codeInput.value.showError();
+        error.value.throwError("Der Ticket Code ist ungültig!")
+    } else {
+        codeInput.value.hideError()
+        error.value.hideError()
+
+        const { data: buyer } = await client
+            .from('buyers')
+            .select()
+            .eq("id", data.buyer)
+            .maybeSingle()
+
+        if (buyer) {
+            data.buyer = buyer
         }
-    },
-    methods: {
-        async loadTicket(code) {    
-            code = code.trim()
 
-            const { data } = await this.client
-                .from('tickets')
-                .select()
-                .eq("ticketCode", code)
-                .maybeSingle()
-
-            if (data === null) {
-                this.$refs.codeInput.showError();
-                this.$refs.error.throwError("Der Ticket Code ist ungültig!")
-            } else {
-                this.$refs.codeInput.hideError()
-                this.$refs.error.hideError()
-
-                const { data: buyer } = await this.client
-                    .from('buyers')
-                    .select()
-                    .eq("id", data.buyer)
-                    .maybeSingle()
-
-                if(buyer){
-                    data.buyer = buyer
-                }
-
-                this.ticket = data
-            }
-        },
-        async validateTicket(code) {
-            const { data, status } = await this.client
-                .from('tickets')
-                .update({ valid: false, validatedAt: new Date() })
-                .eq('ticketCode', code)
-                .select()
-                .maybeSingle()
-
-            if (status !== 200) {
-                this.$refs.loadError.throwError("Das Ticket konnte nicht entwertet werden!")
-            } else {
-                const { data: buyer } = await this.client
-                    .from('buyers')
-                    .select()
-                    .eq("id", data.buyer)
-                    .maybeSingle()
-
-                if(buyer){
-                    data.buyer = buyer
-                }
-                
-                this.$refs.loadError.hideError()
-                this.ticket = data
-            }
-        },
-        cancel() {
-            this.ticket = undefined
-            this.ticketCode = ''
-        }
+        ticket.value = data
     }
+}
+async function validateTicket(code) {
+    const { data, status } = await client
+        .from('tickets')
+        .update({ valid: false, validatedAt: new Date() })
+        .eq('ticketCode', code)
+        .select()
+        .maybeSingle()
+
+    if (status !== 200) {
+        loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+    } else {
+        const { data: buyer } = await client
+            .from('buyers')
+            .select()
+            .eq("id", data.buyer)
+            .maybeSingle()
+
+        if (buyer) {
+            data.buyer = buyer
+        }
+
+        loadError.value.hideError()
+        ticket.value = data
+    }
+}
+function cancel() {
+    ticket.value = undefined
+    ticketCode.value = ''
 }
 </script>
