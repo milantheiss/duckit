@@ -126,6 +126,10 @@ export default {
                     password: user.password,
                 })
 
+                if(data){
+                    useCookie(data)
+                }
+
                 console.log(data);
                 console.log(error);
             } catch (error) {
