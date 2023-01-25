@@ -115,6 +115,8 @@ const submit = async () => {
 
         if (data) {
             auth.setSession(data.session)
+        } else {
+            error.throwError("E-Mail oder Passwort falsch")
         }
 
         console.log(errorRes);

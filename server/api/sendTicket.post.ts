@@ -109,9 +109,9 @@ async function generatePDF(ticketCode: string) {
 	});
 
 	//Import Fonts von txt --> Findet file nicht
-	const ubuntuBold = fs.readFileSync("/fonts/Ubuntu-Bold.txt", "utf8");
-	const ubuntuMedium = fs.readFileSync("/fonts/Ubuntu-Medium.txt", "utf8");
-	const ubuntuRegular = fs.readFileSync("/fonts/Ubuntu-Regular.txt", "utf8");
+	const ubuntuBold = fs.readFileSync("~/public/fonts/Ubuntu-Bold.txt", "utf8");
+	const ubuntuMedium = fs.readFileSync("~/public/fonts/Ubuntu-Medium.txt", "utf8");
+	const ubuntuRegular = fs.readFileSync("~/public/fonts/Ubuntu-Regular.txt", "utf8");
 
 	registerFont(pdf, ubuntuRegular, "Ubuntu-Regular");
 	registerFont(pdf, ubuntuBold, "Ubuntu-Bold");
@@ -121,17 +121,17 @@ async function generatePDF(ticketCode: string) {
 
 	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
 
-	let baseString = fs.readFileSync("/img/calendar_3d.png", "base64");
+	let baseString = fs.readFileSync("~/public/img/calendar_3d.png", "base64");
 	const calIcon = "data:image/jpeg;base64," + baseString;
 
 	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
 
-	baseString = fs.readFileSync("/img/pushpin_3d.png", "base64");
+	baseString = fs.readFileSync("~/public/img/pushpin_3d.png", "base64");
 	const pushpinIcon = "data:image/jpeg;base64," + baseString;
 
 	pdf.addImage(pushpinIcon, "PNG", 19, 43, 9, 9).text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
 
-	baseString = fs.readFileSync("/img/warning_3d.png", "base64");
+	baseString = fs.readFileSync("~/public/img/warning_3d.png", "base64");
 	const warningIcon = "data:image/jpeg;base64," + baseString;
 
 	pdf
