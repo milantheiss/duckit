@@ -107,6 +107,9 @@ import { useDataStore } from '~~/store/dataStore'
 
 export default {
 	async setup() {
+		onMounted(() => {
+            "Lifecycle hook: onMounted"
+        })
 		const data = useDataStore();
 		const client = useSupabaseClient()
 		let { data: user } = await client.auth.getSession();
@@ -127,8 +130,6 @@ export default {
 				}
 			})
 		})
-
-		console.log(client.auth.user);
 
 		return {
 			data,
@@ -168,7 +169,7 @@ export default {
 			const tickets = new Array(this.amount).fill({
 				event: this.runtimeConfig.EVENT_ID,
 				buyer: buyer.id,
-				createdBy: this.user.id
+				createdBy: this.user.session.user.id
 			})
 
 			const { data } = await this.client
@@ -200,8 +201,6 @@ export default {
 				this.$refs.error.throwError('Bitte fülle alle Felder aus')
 				return
 			}
-
-			console.log(this.user);
 
 			const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 

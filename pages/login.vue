@@ -40,9 +40,6 @@
 </template>
 
 <script setup>
-import { client } from 'process';
-
-
 const { auth } = useSupabaseAuthClient()
 const user = useSupabaseUser()
 const form = {
@@ -56,14 +53,6 @@ const passwordInput = ref(null)
 useHead({
     title: 'Login',
     meta: [{ guest: true }]
-})
-
-onMounted(() => {
-    watchEffect(() => {
-        if (user.value) {
-            navigateTo('/checkin')
-        }
-    })
 })
 
 const submit = async () => {

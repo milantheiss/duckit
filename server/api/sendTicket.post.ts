@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
 
 	const html = (ticketCodes: string[]) => {
 		let html =
-			"<html><head><meta charset='utf-8'></head><body><h2>Tickets für die LGS Vofi am 03.02.2023</h2><p>Hier sind deine Codes. Bitte halte deinen QR Code und deinen Ausweis für die Einlasskontrolle bereit.</p><p>Wenn du noch nicht volljährig bist benötigst du auch einen <a href='https://muttizettel.net/'>Muttizettel</a>.</p><p>Den QR Code findest du im Anhang dieser E-Mail oder du kannst ihn dir auf unser Website generieren lassen.</br>(Klicke einfach auf den Code)</p>";
+			"<html><head><meta charset='utf-8'></head><body><h2>Tickets für die LGS Vofi am 03.02.2023</h2><p>Hier sind deine Codes. Bitte halte deinen QR Code und deinen Ausweis für die Einlasskontrolle bereit.</p><p>Wenn du noch nicht volljährig bist benötigst du auch einen <a href='https://muttizettel.net/'>Muttizettel</a>.</p><p>Den QR Code findest du im Anhang dieser E-Mail oder du kannst ihn dir auf unserer Website generieren lassen.</br>(Klicke einfach auf den Code)</p>";
 		ticketCodes.forEach((ticketCode: string) => {
 			html += `<p><a href="https://lgs-abi2023.de/ticket?code=${ticketCode}">🎟️ <span id="ticket">${ticketCode}</span></a></p>`;
 		});

@@ -93,6 +93,10 @@
 export default {
     name: 'CheckInView',
     async setup() {
+        onMounted(() => {
+            "Lifecycle hook: onMounted"
+        })
+
         const client = useSupabaseClient()
         let { data: user } = await client.auth.getSession();
 
