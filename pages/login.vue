@@ -108,14 +108,19 @@ const submit = async () => {
             password: formuser.password,
         })
 
-        watchEffect(async () => {
-            if (user.value) await navigateTo("/register");
-        });
-
         console.log(data);
         console.log(errorRes);
     } catch (error) {
         console.error(error)
     }
+
+    auth.onAuthStateChange((_, _session) => {
+      if(_session?.access_token) {
+        const accessToken = useCookie('sb-access-token')
+        const refreshToken = useCookie('sb-refresh-token')
+        accessToken.value = _session?.access_token ?? null
+        refreshToken.value = _session?.refresh_token ?? null
+      }
+    })
 }
 </script>
