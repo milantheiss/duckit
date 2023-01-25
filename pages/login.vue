@@ -104,7 +104,7 @@ const submit = async () => {
 
 
     try {
-        const { data, errorRes } = await client.aut.signInWithPassword({
+        const { data, errorRes } = await client.auth.signInWithPassword({
             email: formuser.email,
             password: formuser.password,
         })
