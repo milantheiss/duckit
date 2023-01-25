@@ -123,27 +123,29 @@ async function generatePDF(ticketCode: string) {
 	// .setFont("Ubuntu-Bold")
 	.setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
 
-	let baseString = fs.readFileSync("/img/calendar_3d.png", "base64");
-	const calIcon = "data:image/jpeg;base64," + baseString;
+	// let baseString = fs.readFileSync("/img/calendar_3d.png", "base64");
+	// const calIcon = "data:image/jpeg;base64," + baseString;
 
 	pdf
 	// .setFont("Ubuntu-Regular")
 	.setFontSize(18)
-	.addImage(calIcon, "PNG", 19, 32, 9, 9)
+	// .addImage(calIcon, "PNG", 19, 32, 9, 9)
 	.text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
 
-	baseString = fs.readFileSync("/img/pushpin_3d.png", "base64");
-	const pushpinIcon = "data:image/jpeg;base64," + baseString;
+	// baseString = fs.readFileSync("/img/pushpin_3d.png", "base64");
+	// const pushpinIcon = "data:image/jpeg;base64," + baseString;
 
-	pdf.addImage(pushpinIcon, "PNG", 19, 43, 9, 9).text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
+	pdf
+	// .addImage(pushpinIcon, "PNG", 19, 43, 9, 9)
+	.text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
 
-	baseString = fs.readFileSync("/img/warning_3d.png", "base64");
-	const warningIcon = "data:image/jpeg;base64," + baseString;
+	// baseString = fs.readFileSync("/img/warning_3d.png", "base64");
+	// const warningIcon = "data:image/jpeg;base64," + baseString;
 
 	pdf
 		// .setFont("Ubuntu-Medium")
 		.setFontSize(20)
-		.addImage(warningIcon, "PNG", 19, 52, 9, 9)
+		// .addImage(warningIcon, "PNG", 19, 52, 9, 9)
 		.text("Bitte halte dieses Ticket", 33, 59.475)
 		.text("& dein Ausweis bei der ", 33, 67.475)
 		.text("Einlasskontrolle bereit!", 33, 74.475);
