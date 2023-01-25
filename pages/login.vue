@@ -41,7 +41,7 @@
 
 <script setup>
 
-const { auth } = useSupabaseClient()
+const { auth } = useSupabaseAuthClient()
 const user = useSupabaseUser()
 const form = {
     email: "",
@@ -108,10 +108,6 @@ const submit = async () => {
             email: formuser.email,
             password: formuser.password,
         })
-
-        if (!data) {
-            navigateTo("/checkin")
-        }
 
         console.log(errorRes);
 
