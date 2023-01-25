@@ -41,7 +41,7 @@
 
 <script setup>
 
-const client = useSupabaseAuthClient()
+const { auth } = useSupabaseClient()
 const user = useSupabaseUser()
 const form = {
     email: "",
@@ -104,27 +104,29 @@ const submit = async () => {
 
 
     try {
-        const { data, errorRes } = await client.auth.signInWithPassword({
+        const { data, errorRes } = await auth.signInWithPassword({
             email: formuser.email,
             password: formuser.password,
         })
 
         console.log(errorRes);
-        
+
         console.log('Trying to login');
     } catch (errorCatch) {
         console.error(errorCatch)
     }
 
-    client.auth.onAuthStateChange((_, _session) => {
+    auth.onAuthStateChange((_, _session) => {
         console.log('Auth state changed');
-      if(_session?.access_token) {
-        const accessToken = useCookie('sb-access-token')
-        const refreshToken = useCookie('sb-refresh-token')
-        accessToken.value = _session?.access_token ?? null
-        refreshToken.value = _session?.refresh_token ?? null
-        console.log('Setting cookies');
-      }
+
+        if (_session?.access_token) {
+            const accessToken = useCookie('sb-access-token')
+            const refreshToken = useCookie('sb-refresh-token')
+            accessToken.value = _session?.access_token ?? null
+            refreshToken.value = _session?.refresh_token ?? null
+            console.log('Setting cookies');
+
+        }
     })
 }
 </script>
