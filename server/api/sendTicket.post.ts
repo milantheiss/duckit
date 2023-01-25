@@ -109,22 +109,26 @@ async function generatePDF(ticketCode: string) {
 	});
 
 	//Import Fonts von txt --> Findet file nicht
-	const ubuntuBold = fs.readFileSync("public/fonts/Ubuntu-Bold.txt", "utf8");
-	const ubuntuMedium = fs.readFileSync("public/fonts/Ubuntu-Medium.txt", "utf8");
-	const ubuntuRegular = fs.readFileSync("public/fonts/Ubuntu-Regular.txt", "utf8");
+	// const ubuntuBold = fs.readFileSync("public/fonts/Ubuntu-Bold.txt", "utf8");
+	// const ubuntuMedium = fs.readFileSync("public/fonts/Ubuntu-Medium.txt", "utf8");
+	// const ubuntuRegular = fs.readFileSync("public/fonts/Ubuntu-Regular.txt", "utf8");
 
-	registerFont(pdf, ubuntuRegular, "Ubuntu-Regular");
-	registerFont(pdf, ubuntuBold, "Ubuntu-Bold");
-	registerFont(pdf, ubuntuMedium, "Ubuntu-Medium");
+	// registerFont(pdf, ubuntuRegular, "Ubuntu-Regular");
+	// registerFont(pdf, ubuntuBold, "Ubuntu-Bold");
+	// registerFont(pdf, ubuntuMedium, "Ubuntu-Medium");
 
 	pdf.addImage(qrcode, "png", 25, 70.14, 98, 98);
 
-	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
+	pdf
+	// .setFont("Ubuntu-Bold")
+	.setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
 
 	let baseString = fs.readFileSync("public/img/calendar_3d.png", "base64");
 	const calIcon = "data:image/jpeg;base64," + baseString;
 
-	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
+	pdf
+	// .setFont("Ubuntu-Regular")
+	.setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
 
 	baseString = fs.readFileSync("public/img/pushpin_3d.png", "base64");
 	const pushpinIcon = "data:image/jpeg;base64," + baseString;
@@ -135,7 +139,7 @@ async function generatePDF(ticketCode: string) {
 	const warningIcon = "data:image/jpeg;base64," + baseString;
 
 	pdf
-		.setFont("Ubuntu-Medium")
+		// .setFont("Ubuntu-Medium")
 		.setFontSize(20)
 		.addImage(warningIcon, "PNG", 19, 52, 9, 9)
 		.text("Bitte halte dieses Ticket", 33, 59.475)
@@ -143,7 +147,7 @@ async function generatePDF(ticketCode: string) {
 		.text("Einlasskontrolle bereit!", 33, 74.475);
 
 	pdf
-		.setFont("Ubuntu-Bold")
+		// .setFont("Ubuntu-Bold")
 		.setFontSize(30)
 		.textWithLink(`${ticketCode}`, 54, 173.213, { url: `https://lgs-abi2023.de/ticket?code=${ticketCode}` });
 
