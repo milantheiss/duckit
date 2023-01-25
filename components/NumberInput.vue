@@ -1,7 +1,7 @@
 <template>
 	<input
-		class="w-full align-middle px-1.5 py-0.5 shadow text-inherit bg-inherit ease-in-out duration-200 focus:border-indigo-500 focus:ring-indigo-500 placeholder:text-gray-200 rounded-md"
-		:class="_showError ? 'border-2 border-special-red' : 'border-1 border-gray-300'" type="number" :name="name"
+		class="w-full align-middle px-1.5 py-0.5 shadow-input-field border-none bg-zinc-100 text-inherit bg-inherit ease-in-out duration-200 focus:border-indigo-500 focus:ring-indigo-500 placeholder:text-gray-200 rounded-md"
+		:class="_showError ? 'shadow-input-field-error' : ''" type="number" :name="name"
 		v-model="input" :placeholder="placeholder" :max="max" :min="min" :step="step" />
 </template>
 

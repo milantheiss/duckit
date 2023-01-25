@@ -137,6 +137,7 @@ useHead({
 
 async function generateTickets() {
 	const body = dataStore.buyer
+	body.atEvent = runtimeConfig.EVENT_ID
 
 	const { data: buyer, error } = await client
 		.from('buyers')

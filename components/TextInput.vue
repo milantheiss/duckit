@@ -1,10 +1,10 @@
 <template>
 	<input
-		class="block w-full align-middle px-1.5 py-0.5 text-inherit bg-inherit ease-in-out duration-200 shadow focus:border-indigo-500 focus:ring-indigo-500 rounded-md"
+		class="block w-full align-middle px-2.5 border-none shadow-input-field py-0.5 text-inherit bg-zinc-100 ease-in-out duration-200 focus:border-indigo-500 focus:ring-indigo-500 rounded-md"
 		:class="
 			_showError
-				? 'border-2 border-special-red'
-				: 'border-1 border-gray-300'
+				? 'shadow-input-field-error '
+				: ''
 		" :type="type" :name="name" v-model="input" :placeholder="placeholder" />
 </template>
 

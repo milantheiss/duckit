@@ -1,13 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./components/**/*.{js,vue,ts}",
-    "./layouts/**/*.vue",
-    "./pages/**/*.vue",
-    "./plugins/**/*.{js,ts}",
-    "./nuxt.config.{js,ts}",
-    "./app.vue",
-  ],
+	content: [
+		"./components/**/*.{js,vue,ts}",
+		"./layouts/**/*.vue",
+		"./pages/**/*.vue",
+		"./plugins/**/*.{js,ts}",
+		"./nuxt.config.{js,ts}",
+		"./app.vue",
+	],
 	theme: {
 		screens: {
 			ty: '340px',
@@ -69,6 +69,18 @@ module.exports = {
 				wiggle: 'wiggle 1s ease-in-out infinite',
 				'smaller-bounce': 'smaller-bounce 1s ease-in-out infinite',
 				refreshSpin: 'spin 1s linear'
+			},
+			boxShadow: {
+				"input-field":
+					"inset -1px 1px 4px 0px rgba(255,255,255,0.4), inset 0.5px -1px 4px 0px  rgba(0,0,0,0.4), -5px 5px 7px 0px rgba(0,0,0,0.02)",
+				"input-field-error":
+					"inset -1px 1px 4px 0px rgba(255,255,255,0.4), inset 0.5px -1px 4px 0px  rgba(0,0,0,0.4), 0px 0px 3px 3px rgba(255,0,0,0.8)",
+				"white-card":
+					"inset -1px 1px 7px 0px rgba(255,255,255,1), inset 0px -2px 6px 0px  rgba(0,0,0,0.3), -12px 12px 14px 0px rgba(0,0,0,0.15)",
+				"button":
+					"inset -1px 1px 7px 0px rgba(255,255,255,0.65), inset 0.5px -1px 6px 0px  rgba(0,0,0,0.6), -5px 5px 20px 0px rgba(0,0,0,0.35)",
+				"icons":
+					"-5px 5px 20px 0px rgba(0,0,0,0.35)"
 			}
 		}
 	},
