@@ -109,6 +109,15 @@ const submit = async () => {
             password: formuser.password,
         })
 
+        console.log(data);
+
+        if (data) {
+            const accessToken = useCookie('sb-access-token')
+            const refreshToken = useCookie('sb-refresh-token')
+            accessToken.value = data.session.accessToken
+            refreshToken.value = data.session.refreshToken
+        }
+
         console.log(errorRes);
 
         console.log('Trying to login');

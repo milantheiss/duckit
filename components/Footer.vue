@@ -9,7 +9,7 @@
             </p>
             <p class="mx-2">|</p>
             <NuxtLink to="/legalNotice" class="text-lg font-semibold before:content-['↗️']">
-                <span class="hover:underline">Impress</span>
+                <span class="hover:underline">Impressum</span>
             </NuxtLink>
         </div>
         <p class="w-max flex font-light mb-6">🧑‍💻 <a href="https://milantheiss.de" class="hover:underline mx-1">Milan
