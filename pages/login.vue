@@ -67,39 +67,39 @@ const submit = async () => {
     const formuser = form
     const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-    // if (formuser.email === "" && formuser.password === "") {
-    //     error.throwError("Bitte gebe eine E-Mail und ein Passwort ein")
+    if (formuser.email === "" && formuser.password === "") {
+        error.value.throwError("Bitte gebe eine E-Mail und ein Passwort ein")
 
-    //     emailInput.showError()
-    //     passwordInput.showError()
+        emailInput.value.showError()
+        passwordInput.value.showError()
 
-    //     throw new Error("Bitte gebe eine E-Mail und ein Passwort ein")
-    // } else if (formuser.email === "") {
-    //     error.throwError("Bitte gebe eine E-Mail ein")
+        throw new Error("Bitte gebe eine E-Mail und ein Passwort ein")
+    } else if (formuser.email === "") {
+        error.value.throwError("Bitte gebe eine E-Mail ein")
 
-    //     emailInput.showError()
-    //     passwordInput.hideError()
+        emailInput.value.showError()
+        passwordInput.value.hideError()
 
-    //     throw new Error("Bitte gebe eine E-Mail ein")
-    // } else if (formuser.password === "") {
-    //     error.throwError("Bitte gebe ein Passwort ein")
+        throw new Error("Bitte gebe eine E-Mail ein")
+    } else if (formuser.password === "") {
+        error.value.throwError("Bitte gebe ein Passwort ein")
 
-    //     passwordInput.showError()
-    //     emailInput.hideError()
+        passwordInput.value.showError()
+        emailInput.value.hideError()
 
-    //     throw new Error("Bitte gebe ein Passwort ein")
-    // } else if (!formuser.email.match(EMAIL_REGEX)) {
-    //     error.throwError("Bitte gebe eine gültige E-Mail ein")
+        throw new Error("Bitte gebe ein Passwort ein")
+    } else if (!formuser.email.match(EMAIL_REGEX)) {
+        error.value.throwError("Bitte gebe eine gültige E-Mail ein")
 
-    //     emailInput.showError()
-    //     passwordInput.hideError()
+        emailInput.value.showError()
+        passwordInput.value.hideError()
 
-    //     throw new Error("Bitte gebe eine gültige E-Mail ein")
-    // } else {
-    //     error.hideError()
-    //     emailInput.hideError()
-    //     passwordInput.hideError()
-    // }
+        throw new Error("Bitte gebe eine gültige E-Mail ein")
+    } else {
+        error.value.value.hideError()
+        emailInput.value.hideError()
+        passwordInput.value.hideError()
+    }
 
 
     try {
@@ -107,11 +107,10 @@ const submit = async () => {
             email: formuser.email,
             password: formuser.password,
         })
-
-        console.log(data);
-        console.log(errorRes);
-    } catch (error) {
-        console.error(error)
+        
+        console.log('Trying to login');
+    } catch (errorCatch) {
+        console.error(errorCatch)
     }
 
     auth.onAuthStateChange((_, _session) => {
