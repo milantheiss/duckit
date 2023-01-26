@@ -97,17 +97,26 @@ const submit = async () => {
 
     try {
         console.log($supabase);
-        // const { data, errorRes } = await $supabase.auth.signInWithPassword({
-        //     email: form.email,
-        //     password: form.password,
-        // })
-
-        const { data, error } = await auth.signInWithOtp({
+        const { data, errorRes } = await $supabase.auth.signInWithPassword({
             email: form.email,
-            options: {
-                emailRedirectTo: 'http://localhost:3000'
-            }
+            password: form.password,    
         })
+
+        const domain = useRuntimeConfig().SUPABASE_URL.slice(8)
+
+        console.log("domain", domain);
+
+        document.cookie = `sb-access-token=${data?.session.access_token ?? null}; path=/; domain=${domain}; secure=true; SameSite=none`
+        document.cookie = `sb-refresh-token=${data?.session.refresh_token ?? null};path=/; domain=${domain}; secure=true; SameSite=none `
+
+        console.log("cookie", document.cookies);
+
+        // const { data, error } = await auth.signInWithOtp({
+        //     email: form.email,
+        //     options: {
+        //         emailRedirectTo: 'http://localhost:3000'
+        //     }
+        // })
 
         console.log(data);
 
