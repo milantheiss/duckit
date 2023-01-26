@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath } from "node:url";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -19,6 +19,8 @@ export default defineNuxtConfig({
 		SMTP_PASSWORD: process.env.SMTP_PASSWORD,
 
 		public: {
+			SUPABASE_URL: process.env.SUPABASE_URL,
+			SUPABASE_KEY: process.env.SUPABASE_KEY,
 			ENVIORNMENT: process.env.ENVIORNMENT,
 			EVENT_ID: process.env.EVENT_ID,
 		},
@@ -40,4 +42,8 @@ export default defineNuxtConfig({
 			],
 		},
 	},
+	imports: {
+		dirs: ["~/composables"],
+	},
+	ssr: false
 });

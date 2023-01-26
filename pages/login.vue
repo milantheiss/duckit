@@ -28,7 +28,8 @@
                     class="text-lg" ref="passwordInput">
                 </TextInput>
             </div>
-            <ErrorMessage class="mx-3 my-6" ref="error" />
+            <SuccessMessage></SuccessMessage>
+            <ErrorMessage class="mx-3 my-6" ref="errorRef" />
             <div class="flex flex-col justify-center items-end text-lg mt-3">
                 <NuxtLink to="/forgotPassword" class="font-medium text-lg hover:underline mb-3">Password vergessen?
                 </NuxtLink>
@@ -40,12 +41,11 @@
 </template>
 
 <script setup>
-const { auth } = useSupabaseAuthClient()
-let form = {
+const form = {
     email: "",
     password: "",
 }
-const error = ref(null)
+const errorRef = ref(null)
 const emailInput = ref(null)
 const passwordInput = ref(null)
 
@@ -54,85 +54,93 @@ useHead({
     meta: [{ guest: true }]
 })
 
-async function submit() {
+const submit = async () => {
     const formuser = form
     const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
     if (formuser.email === "" && formuser.password === "") {
-        error.value.throwError("Bitte gebe eine E-Mail und ein Passwort ein")
+        errorRef.value.throwError("Bitte gebe eine E-Mail und ein Passwort ein")
 
         emailInput.value.showError()
         passwordInput.value.showError()
 
         throw new Error("Bitte gebe eine E-Mail und ein Passwort ein")
     } else if (formuser.email === "") {
-        error.value.throwError("Bitte gebe eine E-Mail ein")
+        errorRef.value.throwError("Bitte gebe eine E-Mail ein")
 
         emailInput.value.showError()
         passwordInput.value.hideError()
 
         throw new Error("Bitte gebe eine E-Mail ein")
     } else if (formuser.password === "") {
-        error.value.throwError("Bitte gebe ein Passwort ein")
+        errorRef.value.throwError("Bitte gebe ein Passwort ein")
 
         passwordInput.value.showError()
         emailInput.value.hideError()
 
         throw new Error("Bitte gebe ein Passwort ein")
     } else if (!formuser.email.match(EMAIL_REGEX)) {
-        error.value.throwError("Bitte gebe eine gültige E-Mail ein")
+        errorRef.value.throwError("Bitte gebe eine gültige E-Mail ein")
 
         emailInput.value.showError()
         passwordInput.value.hideError()
 
         throw new Error("Bitte gebe eine gültige E-Mail ein")
     } else {
-        error.value.hideError()
+        errorRef.value.hideError()
         emailInput.value.hideError()
         passwordInput.value.hideError()
     }
 
+    const { $supabase } = useNuxtApp()
+    const { auth } = useSupabaseAuthClient()
 
     try {
-        const { data, errorRes } = await auth.signInWithPassword({
-            email: formuser.email,
-            password: formuser.password,
+        console.log($supabase);
+        // const { data, errorRes } = await $supabase.auth.signInWithPassword({
+        //     email: form.email,
+        //     password: form.password,
+        // })
+
+        const { data, error } = await auth.signInWithOtp({
+            email: form.email,
+            options: {
+                emailRedirectTo: 'http://localhost:3000'
+            }
         })
-        
+
         console.log(data);
 
-        if (data.session !== null) {
-            console.log('Logged in');
-            auth.setSession(data.session)
-            navigateTo("/register")
+        if (data) {
+            // console.log("set cookie");
+            // const accessToken = useCookie('sb-access-token')
+            // const refreshToken = useCookie('sb-refresh-token')
+            // console.log(data);
+            // accessToken.value = data?.session.access_token ?? null
+            // refreshToken.value = data?.session.refresh_token ?? null
+            // console.log(accessToken)
         } else {
-            error.value.throwError("E-Mail oder Passwort falsch")
-            console.log(errorRes);
+            error.throwError("E-Mail oder Passwort falsch")
         }
+
+        console.log(errorRes);
 
         console.log('Trying to login');
     } catch (errorCatch) {
         console.error(errorCatch)
     }
 
-    auth.onAuthStateChange((_, _session) => {
+    $supabase.auth.onAuthStateChange((_, _session) => {
+        console.log('Auth state changed');
+
         if (_session?.access_token) {
             const accessToken = useCookie('sb-access-token')
             const refreshToken = useCookie('sb-refresh-token')
             accessToken.value = _session?.access_token ?? null
             refreshToken.value = _session?.refresh_token ?? null
+            console.log('Setting cookies');
+
         }
     })
 }
-
-onMounted(async () => {
-    const user = await (await useSupabaseClient().auth.getSession()).data;
-    watchEffect(() => {
-        if (user.session !== null) {
-            navigateTo('/checkin')
-        }
-    })
-}
-)
-
 </script>
