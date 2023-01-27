@@ -1,26 +1,26 @@
 <template>
 	<div class="w-fit">
-		<div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left mb-4" v-if="!ticket">
+		<div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left mb-4" v-if="typeof ticket?.id === 'undefined'">
 			<h2 class="text-xl sm:text-2xl font-bold">Ticket laden...</h2>
 			<p class="text-base sm:text-lg font-normal text-dark-grey">
 				Bitte gebe den Ticket Code ein
 			</p>
 			<TextInput v-model="ticketCode" placeholder="Ticket Code"
-				class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" ref="code"></TextInput>
-			<ErrorMessage ref="error" class="mt-3"></ErrorMessage>
+				class="w-full font-normal text-light-gray mt-6 mb-3 text-xl py-2 px-2" ref="codeInputField"></TextInput>
+			<ErrorMessage ref="codeLoadingError" class=""></ErrorMessage>
 			<button @click="loadTicket(ticketCode)"
-				class="w-full mt-6 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+				class="w-full mt-3 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
 				Laden
 			</button>
 		</div>
 		<!--Ticket Info-->
-		<div class="flex flex-col justify-center items-center" v-if="ticket">
+		<div class="flex flex-col justify-center items-center" v-if="typeof ticket?.id !== 'undefined'">
 			<div
 				class="bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left mb-4 flex flex-col justify-center items-center ">
 				<qrcode-vue :value="ticket.ticketCode" :size="269"></qrcode-vue>
 				<p class="text-2xl font-bold mt-4">{{ ticket.ticketCode }}</p>
 			</div>
-			<div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg w-full" v-if="typeof ticket !== 'undefined'">
+			<div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg w-full">
 				<h1 class="text-3xl font-bold mb-3 flex items-center" :class="{
 					'text-green-500': ticket.valid,
 					'text-red-600': !ticket.valid
@@ -43,7 +43,7 @@
 					{{ ticket.valid ? 'Gültig' : 'Ungültig' }}
 				</h1>
 				<p v-show="ticket.valid" class="text-xl">
-					Gekauft am
+					Erstellt am
 					<span class="font-bold">{{
 						new Date(ticket.createdAt).toLocaleDateString('de-DE', {
 							year: 'numeric',
@@ -68,65 +68,58 @@
 		</div>
 	</div>
 </template>
-<script>
+<script setup>
 import QrcodeVue from 'qrcode.vue'
+import { useAuthStore } from '~/store/authStore.ts'
 
-export default {
-	name: 'RenderTicketView',
-	setup() {
-		const client = useSupabaseClient()
-		const user = useSupabaseUser()
+const route = useRoute()
+const authStore = useAuthStore()
+const { $supabase } = useNuxtApp()
 
-		useHead({
-			title: "Ticket anzeigen",
-			meta: [{ guest: true }]
-		})
+const codeLoadingError = ref(null)
+const codeInputField = ref(null)
 
-		return {
-			client
+let ticketCode = ref("")
+const ticket = ref({})
+
+useHead({
+	title: "Ticket anzeigen",
+	meta: [{ guest: true }]
+})
+
+onMounted(async () => {
+	let user = ref((await $supabase.auth.getSession()).data.session)
+	
+	ticketCode.value = route.query.code
+
+	authStore.authenticated = (await user).value !== null && typeof (await user).value  !== 'undefined'
+
+	if (ticketCode.value !== "" && typeof ticketCode.value !== 'undefined') {
+		loadTicket(ticketCode.value)
+	}
+})
+
+async function loadTicket(code) {
+	if (code !== '' && typeof code !== 'undefined') {
+		codeLoadingError.value.hideError()
+		codeInputField.value.hideError()
+
+		code = code.trim()
+
+		const { data } = await $supabase
+			.from('tickets')
+			.select()
+			.eq("ticketCode", code)
+			.maybeSingle()
+
+		if (!data) {
+			codeLoadingError.value.throwError("Der Ticket Code ist ungültig!")
+		} else {
+			ticket.value = data
 		}
-	},
-	components: {
-		QrcodeVue
-	},
-	data() {
-		return {
-			ticketCode: this.$route.query.code,
-			ticket: null,
-			token: '',
-			runtimeConfig: useRuntimeConfig(),
-			error: undefined
-		}
-	},
-	mounted() {
-		if (typeof this.ticketCode !== "undefined") {
-			this.loadTicket(this.ticketCode)
-		}
-	},
-	methods: {
-		async loadTicket(code) {
-			if (code !== '' && typeof code !== 'undefined') {
-				this.$refs.error.hideError()
-				this.$refs.code.hideError()
-
-				code = code.trim()
-
-				const { data } = await this.client
-					.from('tickets')
-					.select()
-					.eq("ticketCode", code)
-					.maybeSingle()
-
-				if (data === null) {
-					this.$refs.error.throwError("Der Ticket Code ist ungültig!")
-				} else {
-					this.ticket = data
-				}
-			} else {
-				this.$refs.error.throwError('Bitte gebe einen Code ein!')
-				this.$refs.code.showError()
-			}
-		}
+	} else {
+		codeLoadingError.value.throwError('Bitte gebe einen Code ein!')
+		codeInputField.value.showError()
 	}
 }
 </script>

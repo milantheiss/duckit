@@ -1,4 +1,4 @@
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath } from "node:url";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -13,21 +13,19 @@ export default defineNuxtConfig({
 	},
 	css: ["~/assets/css/main.css"],
 	runtimeConfig: {
-		SMTP_HOST: process.env.SMTP_HOST,
-		SMTP_PORT: process.env.SMTP_PORT,
-		SMTP_USER: process.env.SMTP_USER,
-		SMTP_PASSWORD: process.env.SMTP_PASSWORD,
-
+		SMTP_HOST: process.env.SMTP_HOST ?? "",
+		SMTP_PORT: process.env.SMTP_PORT ?? "",
+		SMTP_USER: process.env.SMTP_USER ?? "",
+		SMTP_PASSWORD: process.env.SMTP_PASSWORD ?? "",
+		
 		public: {
-			ENVIORNMENT: process.env.ENVIORNMENT,
-			EVENT_ID: process.env.EVENT_ID,
+			SUPABASE_URL: process.env.SUPABASE_URL ?? "",
+			SUPABASE_KEY: process.env.SUPABASE_KEY ?? "",
+			ENVIRONMENT: process.env.ENVIRONMENT ?? "",
+			EVENT_ID: process.env.EVENT_ID ?? "",
 		},
 	},
-	modules: ["@pinia/nuxt", "@nuxtjs/supabase"],
-	supabase: {
-		url: process.env.SUPABASE_URL,
-		key: process.env.SUPABASE_KEY,
-	},
+	modules: ["@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
 	app: {
 		head: {
 			title: "LGS ABI 2023",
@@ -39,5 +37,8 @@ export default defineNuxtConfig({
 				{ rel: "manifest", href: "/img/favicons/site.webmanifest" },
 			],
 		},
+	},
+	imports: {
+		dirs: ["~/composables"],
 	},
 });
