@@ -1,11 +1,12 @@
 import nodemailer from "nodemailer";
 import { jsPDF } from "jspdf";
-	const config = useRuntimeConfig();
+
 // @ts-ignore
 import QRCode from "qrcode";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export default defineEventHandler(async (event) => {
+	const config = useRuntimeConfig();
 
 	const transporter = nodemailer.createTransport({
 		// @ts-ignore
