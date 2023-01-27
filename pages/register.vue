@@ -187,7 +187,7 @@ async function generateTickets() {
 		}
 	})
 
-	if (await res.ok === true) {
+	if ((await res).ok === true) {
 		console.log('Tickets sent');
 		checkDetails.value = false
 		showConfirmation.value = true
