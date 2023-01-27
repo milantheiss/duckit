@@ -58,21 +58,36 @@
 					<p class="w-fit text-base sm:text-lg font-medium text-black" placeholder="1">{{ amount }}</p>
 				</div>
 				<div class="flex justify-between items-center mb-6">
-					<p class="text-base sm:text-lg font-medium text-black">* Du bestätigst, dass die Daten korrekt sind.
+					<p class="text-base sm:text-lg font-medium text-[#464646]">* Du bestätigst, dass die Daten korrekt
+						sind.
 						Die Ticket werden automatisch per E-Mail versendet.</p>
 				</div>
 				<ErrorMessage ref="generatorError" class="mb-6"></ErrorMessage>
-				<div class="flex justify-between items-center sm:mx-6">
-					<button
-						class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-						@click="cancel()">
-						Abbrechen
-					</button>
-					<button
-						class="justify-center items-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-						@click="generateTickets()">
-						<span class="ml-2">Bestätigen</span>
-					</button>
+				<div class="flex justify-center items-center">
+
+					<span class="flex items-center justify-between sm:mx-6 w-full" v-show="!isLoading">
+						<button
+							class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+							@click="cancel()">
+							Abbrechen
+						</button>
+						<button
+							class="justify-center items-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+							@click="generateTickets()">
+							<span class="ml-2">Bestätigen</span>
+						</button>
+					</span>
+					<span class="flex items-center justify-center w-full" v-show="isLoading">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+							stroke="currentColor" class="w-8 h-8 animate-[spin_1.25s_linear_infinite] mr-6">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+						</svg>
+						<p class="text-base sm:text-lg font-semibold text-black italic" v-show="amount <= 1">Bitte
+							warten...<br>Ticket wird erstellt und verschickt.</p>
+						<p class="text-base sm:text-lg font-semibold text-black italic" v-show="amount > 1">Bitte
+							warten...<br>Tickets werden erstellt und verschickt.</p>
+					</span>
 				</div>
 			</div>
 			<div class="flex flex-col text-left" v-if="showConfirmation">
@@ -112,6 +127,7 @@ const { $supabase } = useNuxtApp()
 let amount = 1
 let checkDetails = ref(false)
 let showConfirmation = ref(false)
+let isLoading = ref(false)
 
 // refs
 const inputViewError = ref(null)
@@ -135,11 +151,8 @@ onMounted(async () => {
 	watch(
 		() => authStore.authenticated,
 		async () => {
-			if (authStore.authenticated) {
-				console.log('Logged in')
-				navigateTo('/register')
-			} else {
-				console.log('Not logged in')
+			if (!authStore.authenticated) {
+				navigateTo('/login')
 			}
 		},
 		{ deep: true, immediate: true }
@@ -147,6 +160,7 @@ onMounted(async () => {
 })
 
 async function generateTickets() {
+	isLoading.value = true
 	const body = dataStore.buyer
 
 	let newBuyer = false
@@ -156,8 +170,6 @@ async function generateTickets() {
 		.select()
 		.eq('email', body.email)
 		.maybeSingle()
-
-	console.log(buyer);
 
 	if (!buyer) {
 		newBuyer = true
@@ -174,8 +186,6 @@ async function generateTickets() {
 
 		buyer = b
 	}
-
-	console.log(buyer);
 
 	const tickets = new Array(amount).fill({
 		event: runtimeConfig.EVENT_ID,
@@ -204,8 +214,6 @@ async function generateTickets() {
 		}
 	})
 
-	console.log('res', res);
-
 	if (res.ok === true) {
 		console.log('Tickets sent');
 		checkDetails.value = false
@@ -213,8 +221,6 @@ async function generateTickets() {
 	} else {
 		showConfirmation.value = false
 		checkDetails.value = true
-
-		console.log(dataStore.ticketCodes);
 
 		generatorError.value.throwError('Die Tickets konnten nicht versendet werden. Bitte versuche es erneut.')
 
@@ -230,6 +236,7 @@ async function generateTickets() {
 				.eq('id', buyer.id)
 		}
 	}
+	isLoading.value = false
 }
 
 
@@ -263,8 +270,8 @@ function cancel() {
 	}
 	amount = 1
 
-	if(checkDetails.value) generatorError.value.hideError()
-	else if(!showConfirmation.value) inputViewError.value.hideError()
+	if (checkDetails.value) generatorError.value.hideError()
+	else if (!showConfirmation.value) inputViewError.value.hideError()
 
 	checkDetails.value = false
 	showConfirmation.value = false

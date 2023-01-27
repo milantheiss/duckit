@@ -4,7 +4,7 @@
             <h1 class="text-xl sm:text-2xl font-bold">Willkommen...</h1>
             <p class="text-base sm:text-lg font-normal text-dark-grey">Bitte melde dich an</p>
         </div>
-        <div class="bg-white px-6 py-6 rounded-lg drop-shadow-md w-full">
+        <div class="bg-white px-6 py-6 rounded-lg drop-shadow-md w-full flex flex-col">
             <div class="flex items-center mb-6 w-full">
                 <!--Mail Icon-->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -28,8 +28,7 @@
                     class="text-lg" ref="passwordInput">
                 </TextInput>
             </div>
-            <SuccessMessage></SuccessMessage>
-            <ErrorMessage class="mx-3 my-6" ref="errorRef" />
+            <ErrorMessage class="mt-6" ref="errorRef" />
             <div class="flex flex-col justify-center items-end text-lg mt-3">
                 <NuxtLink to="/forgotPassword" class="font-medium text-lg hover:underline mb-3">Password vergessen?
                 </NuxtLink>
@@ -68,11 +67,8 @@ onMounted(async () => {
         () => authStore.authenticated,
         async () => {
             if (authStore.authenticated) {
-                console.log('Logged in')
                 navigateTo('/register')
-            } else {
-                console.log('Not logged in')
-            }
+            } 
         },
         { deep: true, immediate: true }
     )
@@ -117,20 +113,16 @@ const submit = async () => {
     }
 
     try {
-        console.log($supabase);
         const { data, errorRes } = await $supabase.auth.signInWithPassword({
             email: form.email,
             password: form.password,
         })
-
-        $supabase.auth.setSession(data)
-        console.log('Trying to login');
-
-        if (data) {
+        
+        if (data.user && data.session) {
+            $supabase.auth.setSession(data)
             authStore.authenticated = true
-            console.log(authStore.authenticated);
         } else {
-            errorRef.throwError("E-Mail oder Passwort falsch")
+            errorRef.value.throwError("E-Mail oder Passwort falsch")
         }
 
     } catch (errorCatch) {

@@ -110,10 +110,7 @@ onMounted(async () => {
     watch(
         () => authStore.authenticated,
         async () => {
-            if (authStore.authenticated) {
-                console.log('Logged in')
-            } else {
-                console.log('Not logged in')
+            if (!authStore.authenticated) {
                 navigateTo('/login')
             }
         },
@@ -159,7 +156,6 @@ async function loadTicket(code) {
 
         ticket.value = data
     }
-    console.log(Object.keys(ticket.value));
 }
 
 async function validateTicket(code) {

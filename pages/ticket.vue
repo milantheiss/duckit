@@ -79,7 +79,7 @@ const { $supabase } = useNuxtApp()
 const codeLoadingError = ref(null)
 const codeInputField = ref(null)
 
-const ticketCode = route.query.code
+let ticketCode = ref("")
 const ticket = ref({})
 
 useHead({
@@ -90,15 +90,16 @@ useHead({
 onMounted(async () => {
 	let user = ref((await $supabase.auth.getSession()).data.session)
 	
+	ticketCode.value = route.query.code
+
 	authStore.authenticated = (await user).value !== null && typeof (await user).value  !== 'undefined'
 
-	if (typeof ticketCode !== "undefined") {
-		loadTicket(ticketCode)
+	if (ticketCode.value !== "" && typeof ticketCode.value !== 'undefined') {
+		loadTicket(ticketCode.value)
 	}
 })
 
 async function loadTicket(code) {
-	console.log(code);
 	if (code !== '' && typeof code !== 'undefined') {
 		codeLoadingError.value.hideError()
 		codeInputField.value.hideError()
@@ -110,8 +111,6 @@ async function loadTicket(code) {
 			.select()
 			.eq("ticketCode", code)
 			.maybeSingle()
-
-		console.log(data);
 
 		if (!data) {
 			codeLoadingError.value.throwError("Der Ticket Code ist ungültig!")
