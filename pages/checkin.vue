@@ -1,33 +1,31 @@
 <template>
     <div class="flex flex-col justify-center items-center">
-        <div>
-            <div class="bg-white pb-4 rounded-lg drop-shadow-lg text-left mb-4" v-if="typeof ticket === 'undefined'">
-                <div class="w-full flex justify-center items-center">
-                    <ClientOnly>
-                        <QrCodeScanner @decode="(code) => loadTicket(code)" class="rounded-t-lg">
-                        </QrCodeScanner>
-                    </ClientOnly>
-                </div>
-                <div class="mx-3 mt-4">
-                    <h2 class="text-xl sm:text-2xl font-bold">Ticket kontrollieren...</h2>
-                    <p class="text-base sm:text-lg font-normal text-dark-grey">
-                        Bitte scanne den QR Code oder gebe den Ticket Code ein
-                    </p>
-                    <TextInput v-model="ticketCode" placeholder="Ticket Code"
-                        class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" ref="codeInput"></TextInput>
-                    <ErrorMessage ref="error" class="mt-3"></ErrorMessage>
-                    <span class="w-full flex justify-start">
-                        <button @click="loadTicket(ticketCode)"
-                            class="w-full mt-6 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                            Laden
-                        </button>
-                    </span>
-                </div>
+        <div class="bg-white pb-4 rounded-lg drop-shadow-lg text-left mb-4" v-show="typeof ticket?.id === 'undefined'">
+            <div class="w-full flex justify-center items-center">
+                <ClientOnly>
+                    <QrCodeScanner @decode="(code) => loadTicket(code)" class="rounded-t-lg">
+                    </QrCodeScanner>
+                </ClientOnly>
+            </div>
+            <div class="mx-3 mt-4">
+                <h2 class="text-xl sm:text-2xl font-bold">Ticket kontrollieren...</h2>
+                <p class="text-base sm:text-lg font-normal text-dark-grey">
+                    Bitte scanne den QR Code oder gebe den Ticket Code ein
+                </p>
+                <TextInput v-model="ticketCode" placeholder="Ticket Code"
+                    class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" ref="codeInputField"></TextInput>
+                <ErrorMessage ref="codeInputError" class="mt-3"></ErrorMessage>
+                <span class="w-full flex justify-start">
+                    <button @click="loadTicket(ticketCode)"
+                        class="w-full mt-6 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Laden
+                    </button>
+                </span>
             </div>
         </div>
         <!--Ticket Info-->
         <div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left sm:w-[460px]"
-            v-if="Object.keys(ticket).length > 0">
+            v-if="typeof ticket?.id !== 'undefined'">
             <h1 class="text-3xl font-bold mb-3 flex items-center" :class="{
                 'text-green-500': ticket.valid,
                 'text-red-600': !ticket.valid
@@ -91,57 +89,65 @@
     </div>
 </template>
 <script setup>
+import { useAuthStore } from '~~/store/authStore';
+
 let ticketCode = ref('')
-let ticket = reactive({})
-const client = useSupabaseClient()
+let ticket = ref({})
 
 // Refs
-const codeInput = ref(null)
 const loadError = ref(null)
-const error = ref(null)
+const codeInputField = ref(null)
+const codeInputError = ref(null)
 
-let user = {}
+const authStore = useAuthStore()
+const { $supabase } = useNuxtApp()
 
-// Lifecycle Hooks
 onMounted(async () => {
-    user = await (await client.auth.getSession()).data;
-    watchEffect(() => {
-        if (user.session === null) {
-            navigateTo('/login')
-        }
-    })
+    let user = ref((await $supabase.auth.getSession()).data.session)
+
+    authStore.authenticated = (await user).value !== null && typeof (await user).value !== 'undefined'
+
+    watch(
+        () => authStore.authenticated,
+        async () => {
+            if (authStore.authenticated) {
+                console.log('Logged in')
+            } else {
+                console.log('Not logged in')
+                navigateTo('/login')
+            }
+        },
+        { deep: true, immediate: true }
+    )
 })
 
 // Site Setup & Meta
 definePageMeta({
-	auth: true,
-	middleware: ['auth']
+    auth: true,
+    middleware: ['auth']
 })
 
 useHead({
     title: 'Ticket kontrollieren'
 })
 
-
 async function loadTicket(code) {
     code = code.trim()
 
-    console.log(code);
-
-    const { data } = await client
+    const { data } = await $supabase
         .from('tickets')
         .select()
         .eq("ticketCode", code)
         .maybeSingle()
 
     if (data === null) {
-        codeInput.value.showError();
-        error.value.throwError("Der Ticket Code ist ungültig!")
+        codeInputField.value.showError();
+        codeInputError.value.throwError("Der Ticket Code ist ungültig!")
     } else {
-        codeInput.value.hideError()
-        error.value.hideError()
+        codeInputField.value.hideError()
+        codeInputError.value.hideError()
 
-        const { data: buyer } = await client
+        const { data: buyer } = await $supabase
             .from('buyers')
             .select()
             .eq("id", data.buyer)
@@ -150,11 +156,14 @@ async function loadTicket(code) {
         if (buyer) {
             data.buyer = buyer
         }
-        ticket = data
+
+        ticket.value = data
     }
+    console.log(Object.keys(ticket.value));
 }
+
 async function validateTicket(code) {
-    const { data, status } = await client
+    const { data, status } = await $supabase
         .from('tickets')
         .update({ valid: false, validatedAt: new Date() })
         .eq('ticketCode', code)
@@ -164,7 +173,7 @@ async function validateTicket(code) {
     if (status !== 200) {
         loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
     } else {
-        const { data: buyer } = await client
+        const { data: buyer } = await $supabase
             .from('buyers')
             .select()
             .eq("id", data.buyer)
@@ -175,11 +184,12 @@ async function validateTicket(code) {
         }
 
         loadError.value.hideError()
-        ticket = data
+        ticket.value = data
     }
 }
+
 function cancel() {
-    ticket = undefined
+    ticket.value = undefined
     ticketCode.value = ''
 }
 </script>

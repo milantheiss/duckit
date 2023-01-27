@@ -21,11 +21,11 @@ export default defineNuxtConfig({
 		public: {
 			SUPABASE_URL: process.env.SUPABASE_URL,
 			SUPABASE_KEY: process.env.SUPABASE_KEY,
-			ENVIORNMENT: process.env.ENVIORNMENT,
+			ENVIRONMENT: process.env.ENVIRONMENT,
 			EVENT_ID: process.env.EVENT_ID,
 		},
 	},
-	modules: ["@pinia/nuxt", "@nuxtjs/supabase"],
+	modules: ["@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
 	supabase: {
 		url: process.env.SUPABASE_URL,
 		key: process.env.SUPABASE_KEY,
@@ -45,5 +45,4 @@ export default defineNuxtConfig({
 	imports: {
 		dirs: ["~/composables"],
 	},
-	ssr: false
 });

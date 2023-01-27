@@ -537,7 +537,15 @@
     "defu" "^6.1.1"
     "pathe" "^1.0.0"
 
-"@pinia/nuxt@^0.4.6":
+"@pinia-plugin-persistedstate/nuxt@^1.0.0":
+  "integrity" "sha512-oBLnkFXy0mcP9wCR0NQj1SguhgalEoubDF302gpRr1lh0V34vSL2Nlw8XDwRrULq5v3eHt4da632YSjNny1+BA=="
+  "resolved" "https://registry.npmjs.org/@pinia-plugin-persistedstate/nuxt/-/nuxt-1.0.0.tgz"
+  "version" "1.0.0"
+  dependencies:
+    "@nuxt/kit" "^3.0.0"
+    "pinia-plugin-persistedstate" ">=3.0.0"
+
+"@pinia/nuxt@^0.4.4", "@pinia/nuxt@^0.4.6":
   "integrity" "sha512-HjrYEfLdFpmsjhicPJgL36jVhzHWukIQPFFHGTSF84Cplu+f2nY2XHKqe9ToHzE9rLee2RjLOwAzOnXa/I/u6A=="
   "resolved" "https://registry.npmjs.org/@pinia/nuxt/-/nuxt-0.4.6.tgz"
   "version" "0.4.6"
@@ -3855,7 +3863,12 @@
   "resolved" "https://registry.npmjs.org/pify/-/pify-2.3.0.tgz"
   "version" "2.3.0"
 
-"pinia@^2.0.29", "pinia@>=2.0.27":
+"pinia-plugin-persistedstate@>=3.0.0":
+  "integrity" "sha512-84vPyUhPA/8Pr+1mT1ioNb2d8z4tvdgYRqMQf8xyauOVBKjo0ZcRBwPQBV7ZAJG43Kwar43nXG2jU+ZMvAFFRQ=="
+  "resolved" "https://registry.npmjs.org/pinia-plugin-persistedstate/-/pinia-plugin-persistedstate-3.0.2.tgz"
+  "version" "3.0.2"
+
+"pinia@^2.0.0", "pinia@^2.0.29", "pinia@>=2.0.27":
   "integrity" "sha512-5z/KpFecq/cIgfeTnulJXldiLcTITRkTe3N58RKYSj0Pc1EdR6oyCdnf5A9jLoVwBqX5LtHhd0kGlpzWvk9oiQ=="
   "resolved" "https://registry.npmjs.org/pinia/-/pinia-2.0.29.tgz"
   "version" "2.0.29"

@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
 			return { path: await generatePDF(ticketCode) };
 		});
 
-		const mail = await transporter.sendMail({
+		await transporter.sendMail({
 			from: "LGS Vofi Ticket <noreply@lgs-abi2023.de>",
 			to: data.email,
 			subject: "Deine Ticket für die LGS Vofi am 03.02.2023",
@@ -62,9 +62,13 @@ export default defineEventHandler(async (event) => {
 		});
 	};
 
-	await sendMail(isValid(body));
+	try {
+		await sendMail(isValid(body));
+		return {ok: true, error: null};
+	} catch (error) {
+		return {ok: null, error: error}
+	}
 
-	return "Gesendet!";
 });
 
 interface EmailBody {

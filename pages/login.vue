@@ -41,6 +41,8 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '~~/store/authStore';
+
 const form = {
     email: "",
     password: "",
@@ -49,9 +51,31 @@ const errorRef = ref(null)
 const emailInput = ref(null)
 const passwordInput = ref(null)
 
+const authStore = useAuthStore()
+const { $supabase } = useNuxtApp()
+
 useHead({
     title: 'Login',
     meta: [{ guest: true }]
+})
+
+onMounted(async () => {
+    let user = ref((await $supabase.auth.getSession()).data.session)
+
+    authStore.authenticated = (await user).value !== null && typeof (await user).value  !== 'undefined'
+
+    watch(
+        () => authStore.authenticated,
+        async () => {
+            if (authStore.authenticated) {
+                console.log('Logged in')
+                navigateTo('/register')
+            } else {
+                console.log('Not logged in')
+            }
+        },
+        { deep: true, immediate: true }
+    )
 })
 
 const submit = async () => {
@@ -92,55 +116,25 @@ const submit = async () => {
         passwordInput.value.hideError()
     }
 
-    const { $supabase } = useNuxtApp()
-    const { auth } = useSupabaseAuthClient()
-
     try {
         console.log($supabase);
-        // const { data, errorRes } = await $supabase.auth.signInWithPassword({
-        //     email: form.email,
-        //     password: form.password,
-        // })
-
-        const { data, error } = await auth.signInWithOtp({
+        const { data, errorRes } = await $supabase.auth.signInWithPassword({
             email: form.email,
-            options: {
-                emailRedirectTo: 'http://localhost:3000'
-            }
+            password: form.password,
         })
 
-        console.log(data);
+        $supabase.auth.setSession(data)
+        console.log('Trying to login');
 
         if (data) {
-            // console.log("set cookie");
-            // const accessToken = useCookie('sb-access-token')
-            // const refreshToken = useCookie('sb-refresh-token')
-            // console.log(data);
-            // accessToken.value = data?.session.access_token ?? null
-            // refreshToken.value = data?.session.refresh_token ?? null
-            // console.log(accessToken)
+            authStore.authenticated = true
+            console.log(authStore.authenticated);
         } else {
-            error.throwError("E-Mail oder Passwort falsch")
+            errorRef.throwError("E-Mail oder Passwort falsch")
         }
 
-        console.log(errorRes);
-
-        console.log('Trying to login');
     } catch (errorCatch) {
         console.error(errorCatch)
     }
-
-    $supabase.auth.onAuthStateChange((_, _session) => {
-        console.log('Auth state changed');
-
-        if (_session?.access_token) {
-            const accessToken = useCookie('sb-access-token')
-            const refreshToken = useCookie('sb-refresh-token')
-            accessToken.value = _session?.access_token ?? null
-            refreshToken.value = _session?.refresh_token ?? null
-            console.log('Setting cookies');
-
-        }
-    })
 }
 </script>
