@@ -62,7 +62,7 @@ useHead({
 onMounted(async () => {
     let user = ref((await $supabase.auth.getSession()).data.session)
 
-    authStore.authenticated = (await user).value !== null && typeof (await user).value  !== 'undefined'
+    authStore.authenticated = (await user).value !== null && typeof (await user).value !== 'undefined'
 
     watch(
         () => authStore.authenticated,

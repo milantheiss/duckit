@@ -6,10 +6,10 @@
 				Bitte gebe den Ticket Code ein
 			</p>
 			<TextInput v-model="ticketCode" placeholder="Ticket Code"
-				class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" ref="codeInputField"></TextInput>
-			<ErrorMessage ref="codeLoadingError" class="mt-3"></ErrorMessage>
+				class="w-full font-normal text-light-gray mt-6 mb-3 text-xl py-2 px-2" ref="codeInputField"></TextInput>
+			<ErrorMessage ref="codeLoadingError" class=""></ErrorMessage>
 			<button @click="loadTicket(ticketCode)"
-				class="w-full mt-6 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+				class="w-full mt-3 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
 				Laden
 			</button>
 		</div>
@@ -113,7 +113,7 @@ async function loadTicket(code) {
 
 		console.log(data);
 
-		if (data === null) {
+		if (!data) {
 			codeLoadingError.value.throwError("Der Ticket Code ist ungültig!")
 		} else {
 			ticket.value = data

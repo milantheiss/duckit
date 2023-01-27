@@ -1,7 +1,7 @@
 <template>
 	<div class="sm:w-[460px]">
-		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left" v-if="dataStore.ticketCodes.length === 0">
-			<div v-show="!checkDetails">
+		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left">
+			<div v-show="!checkDetails && !showConfirmation">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Tickets registrieren</h1>
 
 				<div class="flex justify-between items-center mb-3">
@@ -75,26 +75,25 @@
 					</button>
 				</div>
 			</div>
-		</div>
-		<div class="flex flex-col bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left"
-			v-if="dataStore.ticketCodes.length > 0">
-			<h1 class="text-xl sm:text-2xl font-bold ">Tickets erstellt...</h1>
-			<p class="text-base sm:text-lg font-normal text-dark-grey mb-3">
-				Werden an <span class="font-semibold">{{ dataStore.buyer.email }}</span> versendet.
-			</p>
-			<ul class="list-['🎟️'] list-inside mb-3">
-				<li v-for="code in dataStore.ticketCodes" :key="code"
-					class="text-base sm:text-lg font-bold text-black mb-1">
-					<NuxtLink :to="'/ticket?code=' + code" class="text-lg font-bold hover:underline ml-3">
-						{{ code }}
-					</NuxtLink>
-				</li>
-			</ul>
-			<button
-				class="justify-center rounded-lg mx-auto drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-				@click="cancel()">
-				Ok
-			</button>
+			<div class="flex flex-col text-left" v-if="showConfirmation">
+				<h1 class="text-xl sm:text-2xl font-bold ">Tickets erstellt...</h1>
+				<p class="text-base sm:text-lg font-normal text-dark-grey mb-3">
+					Wurden an <span class="font-semibold">{{ dataStore.buyer.email }}</span> versendet.
+				</p>
+				<ul class="list-['🎟️'] list-inside mb-3">
+					<li v-for="code in dataStore.ticketCodes" :key="code"
+						class="text-base sm:text-lg font-bold text-black mb-1">
+						<NuxtLink :to="'/ticket?code=' + code" class="text-lg font-bold hover:underline ml-3">
+							{{ code }}
+						</NuxtLink>
+					</li>
+				</ul>
+				<button
+					class="justify-center rounded-lg mx-auto drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+					@click="cancel()">
+					Ok
+				</button>
+			</div>
 		</div>
 	</div>
 </template>
@@ -150,15 +149,33 @@ onMounted(async () => {
 async function generateTickets() {
 	const body = dataStore.buyer
 
-	const { data: buyer, error } = await $supabase
+	let newBuyer = false
+
+	let { data: buyer, error } = await $supabase
 		.from('buyers')
-		.upsert(body, {
-			onConflict: 'email',
-			ignoreDuplicates: false
-		})
 		.select()
 		.eq('email', body.email)
 		.maybeSingle()
+
+	console.log(buyer);
+
+	if (!buyer) {
+		newBuyer = true
+
+		const { data: b } = await $supabase
+			.from('buyers')
+			.insert(body, {
+				onConflict: 'email',
+				ignoreDuplicates: false
+			})
+			.select()
+			.eq('email', body.email)
+			.maybeSingle()
+
+		buyer = b
+	}
+
+	console.log(buyer);
 
 	const tickets = new Array(amount).fill({
 		event: runtimeConfig.EVENT_ID,
@@ -194,6 +211,11 @@ async function generateTickets() {
 		checkDetails.value = false
 		showConfirmation.value = true
 	} else {
+		showConfirmation.value = false
+		checkDetails.value = true
+
+		console.log(dataStore.ticketCodes);
+
 		generatorError.value.throwError('Die Tickets konnten nicht versendet werden. Bitte versuche es erneut.')
 
 		await $supabase
@@ -201,13 +223,12 @@ async function generateTickets() {
 			.delete()
 			.in('ticketCode', dataStore.ticketCodes)
 
-		//TODO Einfügen, wenn Res bei Dup Buyer gecheckt wurde
-		// await $supabase
-		// .from('buyers')
-		// .delete()
-		// .eq('id', buyer.id)
-
-		console.error(res.error)
+		if (newBuyer) {
+			await $supabase
+				.from('buyers')
+				.delete()
+				.eq('id', buyer.id)
+		}
 	}
 }
 
@@ -225,9 +246,12 @@ async function onContinue() {
 		emailInput.value.showError()
 		emailInput.value.focus()
 		return
+	} else {
+		inputViewError.value.hideError()
+		emailInput.value.hideError()
+		checkDetails.value = true
 	}
 
-	checkDetails.value = true
 }
 
 function cancel() {
@@ -238,6 +262,9 @@ function cancel() {
 		email: ''
 	}
 	amount = 1
+
+	if(checkDetails.value) generatorError.value.hideError()
+	else if(!showConfirmation.value) inputViewError.value.hideError()
 
 	checkDetails.value = false
 	showConfirmation.value = false

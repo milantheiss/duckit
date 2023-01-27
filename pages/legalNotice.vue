@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left mb-4 md:w-[920px] sm:w-[460px]">
+    <div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left mb-4 lg:w-[950px] md:w-[750px] sm:w-[455px] mx-2">
         <div>
             <h1 class="text-xl font-bold">Impressum</h1>
             <p>Angaben gemäß § 5 TMG</p>
