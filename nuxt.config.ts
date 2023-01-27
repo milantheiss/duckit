@@ -13,23 +13,19 @@ export default defineNuxtConfig({
 	},
 	css: ["~/assets/css/main.css"],
 	runtimeConfig: {
-		SMTP_HOST: process.env.SMTP_HOST,
-		SMTP_PORT: process.env.SMTP_PORT,
-		SMTP_USER: process.env.SMTP_USER,
-		SMTP_PASSWORD: process.env.SMTP_PASSWORD,
-
+		SMTP_HOST: process.env.SMTP_HOST ?? "",
+		SMTP_PORT: process.env.SMTP_PORT ?? "",
+		SMTP_USER: process.env.SMTP_USER ?? "",
+		SMTP_PASSWORD: process.env.SMTP_PASSWORD ?? "",
+		
 		public: {
-			SUPABASE_URL: process.env.SUPABASE_URL,
-			SUPABASE_KEY: process.env.SUPABASE_KEY,
-			ENVIRONMENT: process.env.ENVIRONMENT,
-			EVENT_ID: process.env.EVENT_ID,
+			SUPABASE_URL: process.env.SUPABASE_URL ?? "",
+			SUPABASE_KEY: process.env.SUPABASE_KEY ?? "",
+			ENVIRONMENT: process.env.ENVIRONMENT ?? "",
+			EVENT_ID: process.env.EVENT_ID ?? "",
 		},
 	},
 	modules: ["@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
-	supabase: {
-		url: process.env.SUPABASE_URL,
-		key: process.env.SUPABASE_KEY,
-	},
 	app: {
 		head: {
 			title: "LGS ABI 2023",

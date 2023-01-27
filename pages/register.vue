@@ -152,6 +152,10 @@ async function generateTickets() {
 
 	const { data: buyer, error } = await $supabase
 		.from('buyers')
+		.upsert(body, {
+			onConflict: 'email',
+			ignoreDuplicates: false
+		})
 		.select()
 		.eq('email', body.email)
 		.maybeSingle()
