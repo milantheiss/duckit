@@ -1,12 +1,12 @@
 import nodemailer from "nodemailer";
 import { jsPDF } from "jspdf";
-import fs from "fs";
 // @ts-ignore
 import QRCode from "qrcode";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig();
-	
+
 	const transporter = nodemailer.createTransport({
 		// @ts-ignore
 		host: config.SMTP_HOST,
@@ -48,12 +48,12 @@ export default defineEventHandler(async (event) => {
 		return text;
 	};
 
-	const sendMail = async (data: EmailBody) => {
+	const sendMail = async (data: EmailBody):Promise<SMTPTransport.SentMessageInfo> => {
 		const attachments = await data.ticketCodes.map(async (ticketCode: string) => {
 			return { path: await generatePDF(ticketCode) };
 		});
 
-		await transporter.sendMail({
+		return await transporter.sendMail({
 			from: "LGS Vofi Ticket <noreply@lgs-abi2023.de>",
 			to: data.email,
 			subject: "Deine Ticket für die LGS Vofi am 03.02.2023",
@@ -63,13 +63,11 @@ export default defineEventHandler(async (event) => {
 		});
 	};
 
-	try {
-		await sendMail(isValid(body));
-		return {ok: true, error: null};
-	} catch (error) {
-		return {ok: null, error: error}
-	}
+	const mail = await sendMail(isValid(body));
 
+	const ok = mail.rejected.length === 0;
+
+	return { ok: ok, error: ok ? "" : mail.response };
 });
 
 interface EmailBody {
@@ -114,9 +112,13 @@ async function generatePDF(ticketCode: string) {
 	});
 
 	//Import Fonts von txt --> Findet file nicht
-	const ubuntuBold = await (await fetch(`https://gist.githubusercontent.com/milantheiss/8b74605ce4f9af7c0b600ff376bdf269/raw/Ubuntu-Bold`)).text()
-	const ubuntuMedium = await (await fetch(`https://gist.githubusercontent.com/milantheiss/4223031336767ba0a6b839435a8de3e5/raw/Ubuntu-Regular`)).text()
-	const ubuntuRegular = await (await fetch(`https://gist.githubusercontent.com/milantheiss/b76fa6ff9cec5641247cd378d8ebb7e3/raw/Ubuntu-Medium`)).text()
+	const ubuntuBold = await (await fetch(`https://gist.githubusercontent.com/milantheiss/8b74605ce4f9af7c0b600ff376bdf269/raw/Ubuntu-Bold`)).text();
+	const ubuntuMedium = await (
+		await fetch(`https://gist.githubusercontent.com/milantheiss/4223031336767ba0a6b839435a8de3e5/raw/Ubuntu-Regular`)
+	).text();
+	const ubuntuRegular = await (
+		await fetch(`https://gist.githubusercontent.com/milantheiss/b76fa6ff9cec5641247cd378d8ebb7e3/raw/Ubuntu-Medium`)
+	).text();
 
 	registerFont(pdf, ubuntuRegular, "Ubuntu-Regular");
 	registerFont(pdf, ubuntuBold, "Ubuntu-Bold");
@@ -124,25 +126,17 @@ async function generatePDF(ticketCode: string) {
 
 	pdf.addImage(qrcode, "png", 25, 70.14, 98, 98);
 
-	pdf
-	.setFont("Ubuntu-Bold")
-	.setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
+	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
 
-	const calIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/1c3e70fa8ad1890b4458acc5a64fc87b/raw/calendar_icon")).text()
+	const calIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/1c3e70fa8ad1890b4458acc5a64fc87b/raw/calendar_icon")).text();
 
-	pdf
-	.setFont("Ubuntu-Regular")
-	.setFontSize(18)
-	.addImage(calIcon, "PNG", 19, 32, 9, 9)
-	.text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
+	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
 
-	const pushpinIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/9b8201b82c6777cf29263e9596bf867a/raw/pushpin_icon")).text()
+	const pushpinIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/9b8201b82c6777cf29263e9596bf867a/raw/pushpin_icon")).text();
 
-	pdf
-	.addImage(pushpinIcon, "PNG", 19, 43, 9, 9)
-	.text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
+	pdf.addImage(pushpinIcon, "PNG", 19, 43, 9, 9).text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
 
-	const warningIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/f0763b7b8f00cc90b88cbeb2a4cd97ee/raw/warning_icon")).text()
+	const warningIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/f0763b7b8f00cc90b88cbeb2a4cd97ee/raw/warning_icon")).text();
 
 	pdf
 		.setFont("Ubuntu-Medium")
