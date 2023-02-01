@@ -62,6 +62,7 @@ onMounted(async () => {
     let user = ref((await $supabase.auth.getSession()).data.session)
 
     authStore.authenticated = (await user).value !== null && typeof (await user).value !== 'undefined'
+    console.log(authStore.authenticated);
 
     watch(
         () => authStore.authenticated,
