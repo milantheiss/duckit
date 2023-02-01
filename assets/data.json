@@ -1,0 +1,92 @@
+[
+    {
+        "firstname": "Emelie Luise",
+        "lastname": "Testoni",
+        "email": "emetes@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Marlon",
+        "lastname": "Möller",
+        "email": "marmoe@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Finnegan",
+        "lastname": "Fuchs",
+        "email": "finfuc@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Maria",
+        "lastname": "Petric",
+        "email": "marpet1@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Chantal",
+        "lastname": "Wittmann",
+        "email": "chawit@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Wahed",
+        "lastname": "Kakar",
+        "email": "wahkak@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Victoria Sophie Margarete",
+        "lastname": "Röttger",
+        "email": "vicroe@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Nanja Madalena",
+        "lastname": "Ngum",
+        "email": "nanngu@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Laura",
+        "lastname": "Trippel",
+        "email": "lautri@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Philip",
+        "lastname": "Rexroth",
+        "email": "phirex@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Muzafer",
+        "lastname": "Ötnü",
+        "email": "muzoet@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Lars",
+        "lastname": "Pullmann",
+        "email": "larpul@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Justus",
+        "lastname": "Konn-Kruse",
+        "email": "juskon@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Almir",
+        "lastname": "Musovi",
+        "email": "almmus@lgs-di.de",
+        "amount": 1
+    },
+    {
+        "firstname": "Keanu",
+        "lastname": "Vizvari",
+        "email": "keaviz@lgs-di.de",
+        "amount": 1
+    }
+]
