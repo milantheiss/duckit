@@ -1,15 +1,15 @@
 <template>
-	<div class="sm:w-[460px]">
+	<div class="sm:w-[390px]">
 		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left">
 			<div v-show="showSearchField">
-				<h1 class="text-xl sm:text-2xl font-bold mb-6">Suche...</h1>
-				<TextInput v-model="searchQuery" placeholder="Suche..."
-					class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" ref="searchInputField">
+				<h1 class="text-xl sm:text-2xl font-bold">Suche...</h1>
+				<p class="text-base sm:text-lg font-normal text-dark-grey">
+					nach E-Mail
+				</p>
+				<TextInput v-model="searchQuery" placeholder="E-Mail"
+					class="w-full font-normal text-light-gray mt-6 mb-3 text-xl py-2 px-2" ref="searchInputField">
 				</TextInput>
 				<ErrorMessage ref="searchError" class="mt-3"></ErrorMessage>
-				<div class="flex justify-between items-center mb-6">
-
-				</div>
 				<div class="flex justify-between items-center">
 					<button
 						class="w-full mt-3 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -18,7 +18,7 @@
 					</button>
 				</div>
 			</div>
-			<div v-show="!showSearchField">
+			<div v-show="!showSearchField" class="sm:w-[460px]">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Alle Ergebnisse...</h1>
 				<!--Erst Email -->
 				<CollapsibleContainer v-for="(response, index) in searchResponses" :key="response.email"
@@ -30,7 +30,7 @@
 								@click="$refs.collapsibleContrainer[index].toggleShowContent()">{{ response.email }}</p>
 							<button
 								class="justify-center rounded-lg drop-shadow-md border border-transparent bg-indigo-600 py-0.5 px-2.5 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-								@click="onClick()">
+								@click="handleClickOnSingleCode($event, response)">
 								Alle
 							</button>
 						</div>
@@ -76,13 +76,37 @@
 	<ContextMenu ref="ctxMenuSingleCode">
 		<div class="flex flex-col">
 			<button
-				class="flex justify-start items-center rounded-t-lg border-black py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				class="flex justify-start items-center rounded-lg border-black py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 				@click="onResend(ctxMenuSingleCode.data)">
 				✉️ Neu senden
 			</button>
 			<button
-				class="flex justify-start items-center rounded-b-lg border border-transparent py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				class="flex justify-start items-center rounded-lg border border-transparent py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 				@click="onValidate(ctxMenuSingleCode.data)">
+				✅ Gültig machen
+			</button>
+			<button
+				class="flex justify-start items-center rounded-lg border border-transparent py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				@click="onInvalidate(ctxMenuSingleCode.data)">
+				🔥 Entwerten
+			</button>
+		</div>
+	</ContextMenu>
+	<ContextMenu ref="ctxMenuAllCode">
+		<div class="flex flex-col">
+			<button
+				class="flex justify-start items-center rounded-lg border-black py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				@click="onResendAll(ctxMenuAllCode.data)">
+				✉️ Neu senden
+			</button>
+			<button
+				class="flex justify-start items-center rounded-lg border border-transparent py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				@click="onValidateAll(ctxMenuAllCode.data)">
+				✅ Gültig machen
+			</button>
+			<button
+				class="flex justify-start items-center rounded-lg border border-transparent py-1.5 px-3 text-base font-medium text-black hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+				@click="onInvalidateAll(ctxMenuAllCode.data)">
 				🔥 Entwerten
 			</button>
 		</div>
@@ -122,6 +146,7 @@ let isLoading = ref(false)
 const searchInputField = ref(null)
 const searchError = ref(null)
 const ctxMenuSingleCode = ref(null)
+const ctxMenuAllCode = ref(null)
 
 definePageMeta({
 	auth: true,
@@ -154,6 +179,14 @@ async function search() {
 		return
 	}
 
+	const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+	if (!searchQuery.value.match(EMAIL_REGEX)) {
+		searchError.value.throwError('Bitte geb eine gültige E-Mail Adresse an')
+		searchInputField.value.showError()
+		return
+	}
+
 	searchInputField.value.hideError()
 	searchError.value.hideError()
 
@@ -183,7 +216,7 @@ async function search() {
 			.select('ticketCode, valid')
 			.eq('buyer', buyer.id)
 
-		if(ticketError) {
+		if (ticketError) {
 			searchError.value.throwError('Fehler beim Suchen der Tickets')
 			return
 		}
@@ -210,10 +243,8 @@ function back() {
 
 	searchInputField.value.hideError()
 	searchError.value.hideError()
-}
 
-function onClick() {
-	console.log('click')
+	showSearchField.value = true
 }
 
 function handleClickOnSingleCode(event, data) {
@@ -247,10 +278,117 @@ async function onValidate(data) {
 	console.log(data);
 	const { data: res, status } = await $supabase
 		.from('tickets')
-		.update({ valid: false, validatedAt: new Date().toISOString() })
+		.update({ valid: true, invalidatedAt: null })
 		.eq('ticketCode', data.ticket.ticketCode)
 		.select()
 		.maybeSingle()
+
+	if (status !== 200) {
+		//TODO Zeige Toast --> Fehler
+		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+	} else {
+		//TODO Zeige Toast --> Ticket entwertet
+		// loadError.value.hideError()
+		searchResponses.value = searchResponses.value.map((response) => {
+			if (response.email === data.email) {
+				response.tickets = response.tickets.map((ticket) => {
+					if (ticket.ticketCode === data.ticket.ticketCode) {
+						ticket.valid = true
+					}
+					return ticket
+				})
+			}
+			return response
+		})
+	}
+}
+
+async function onInvalidate(data) {
+	console.log(data);
+	const { data: res, status } = await $supabase
+		.from('tickets')
+		.update({ valid: false, invalidatedAt: new Date().toISOString() })
+		.eq('ticketCode', data.ticket.ticketCode)
+		.select()
+		.maybeSingle()
+
+	if (status !== 200) {
+		//TODO Zeige Toast --> Fehler
+		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+	} else {
+		//TODO Zeige Toast --> Ticket entwertet
+		// loadError.value.hideError()
+		searchResponses.value = searchResponses.value.map((response) => {
+			if (response.email === data.email) {
+				response.tickets = response.tickets.map((ticket) => {
+					if (ticket.ticketCode === data.ticket.ticketCode) {
+						ticket.valid = false
+					}
+					return ticket
+				})
+			}
+			return response
+		})
+	}
+}
+
+async function onResendAll(data) {
+	console.log(data);
+	console.log('Trying to resend');
+	const res = await $fetch("/api/sendTicket", {
+		method: 'POST',
+		body: {
+			email: data.email,
+			ticketCodes: data.tickets.map(ticket => ticket.ticketCode)
+		}
+	})
+
+	console.log(res);
+
+	if (res.ok === true) {
+		//TODO Zeige Toast --> Tickets versendet
+		console.log('Tickets sent');
+	} else {
+		//TODO Zeige Toast --> Fehler
+		console.log('Error', res.error);
+	}
+}
+
+async function onValidateAll(data) {
+	console.log(data);
+	const { data: res, status } = await $supabase
+		.from('tickets')
+		.update({ valid: true, invalidatedAt: null })
+		.in('ticketCode', data.tickets.map(ticket => ticket.ticketCode))
+		.select()
+
+	if (status !== 200) {
+		//TODO Zeige Toast --> Fehler
+		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+	} else {
+		//TODO Zeige Toast --> Ticket entwertet
+		// loadError.value.hideError()
+		searchResponses.value = searchResponses.value.map((response) => {
+			if (response.email === data.email) {
+				response.tickets = response.tickets.map((ticket) => {
+					if (ticket.ticketCode === data.ticket.ticketCode) {
+						ticket.valid = true
+					}
+					return ticket
+				})
+			}
+			return response
+		})
+	}
+}
+
+async function onInvalidateAll(data) {
+	console.log(data);
+	const { data: res, status } = await $supabase
+		.from('tickets')
+		.update({ valid: true, invalidatedAt: new Date().toISOString() })
+		.in('ticketCode', data.tickets.map(ticket => ticket.ticketCode))
+		.select()
 
 	if (status !== 200) {
 		//TODO Zeige Toast --> Fehler

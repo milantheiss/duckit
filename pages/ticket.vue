@@ -1,6 +1,6 @@
 <template>
-	<div class="w-fit">
-		<div class="bg-white px-4 py-4 rounded-lg drop-shadow-lg text-left mb-4" v-if="typeof ticket?.id === 'undefined'">
+	<div class="sm:w-[390px]">
+		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left mb-4" v-if="typeof ticket?.id === 'undefined'">
 			<h2 class="text-xl sm:text-2xl font-bold">Ticket laden...</h2>
 			<p class="text-base sm:text-lg font-normal text-dark-grey">
 				Bitte gebe den Ticket Code ein

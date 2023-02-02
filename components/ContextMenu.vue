@@ -10,10 +10,10 @@ const contextRef = ref(null);
 
 //const { onClickOutside } = useClickOutside();
 
-const show = ref(false);
+let show = ref(false);
 const _data = ref(undefined); // data to be passed to context menu
-const left = ref(0) // left position
-const top = ref(0) // top position
+let left = ref(0) // left position
+let top = ref(0) // top position
 
 function close() {
   show.value = false;

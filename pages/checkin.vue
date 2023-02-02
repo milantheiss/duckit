@@ -64,7 +64,7 @@
             </p>
             <p v-if="!ticket.valid" class="text-xl flex justify-between items-center">
                 Entwertet am: <span class="font-bold">{{
-                    new Date(ticket.validatedAt).toLocaleString('de-DE', {
+                    new Date(ticket.invalidatedAt).toLocaleString('de-DE', {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -80,7 +80,7 @@
                     class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Zurück
                 </button>
-                <button @click="validateTicket(ticket.ticketCode)" v-if="ticket.valid"
+                <button @click="invalidateTicket(ticket.ticketCode)" v-if="ticket.valid"
                     class="rounded-lg drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Entwerten
                 </button>
@@ -158,10 +158,10 @@ async function loadTicket(code) {
     }
 }
 
-async function validateTicket(code) {
+async function invalidateTicket(code) {
     const { data, status } = await $supabase
         .from('tickets')
-        .update({ valid: false, validatedAt: new Date().toISOString() })
+        .update({ valid: false, invalidatedAt: new Date().toISOString() })
         .eq('ticketCode', code)
         .select()
         .maybeSingle()
