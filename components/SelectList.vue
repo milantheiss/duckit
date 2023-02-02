@@ -1,11 +1,11 @@
 <template>
 	<select
 		v-model="selected"
-		class="block w-full pl-2 pb-0.5 text-inherit text-lg md:text-xl focus:ring-0 focus:border-electric-blue bg-inherit cursor-pointer"
-		:class="_showError ? 'border-2 rounded-lg border-special-red' : 'border-0 border-b-2 border-electric-blue rounded-none'"
+		class="block w-full align-middle px-1.5 py-0.5 text-inherit bg-inherit ease-in-out duration-200 shadow focus:border-indigo-500 focus:ring-indigo-500 rounded-md cursor-pointer"
+		:class="_showError ? 'border-2 border-special-red' : 'border-1 border-gray-300'"
 		style="background-position: right 0.1rem center; padding-right: 1.9rem">
 		<option v-for="element in options" :key="element.name" :value="element">
-			{{ element.name }}
+			{{ element }}
 		</option>
 	</select>
 </template>

@@ -68,9 +68,11 @@ export default defineEventHandler(async (event) => {
 		const mail = await sendMail(isValid(body));
 	
 		const ok = mail.rejected.length === 0;
+		console.log(mail.response);
 	
 		return { ok: ok, error: ok ? "" : mail.response };
 	} catch (e) {
+		
 		return { ok: false, error: e };
 	}
 });

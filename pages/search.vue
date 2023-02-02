@@ -2,11 +2,7 @@
 	<div class="sm:w-[460px]">
 		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left">
 			<div v-show="showSearchField">
-				<h1 class="text-xl sm:text-2xl font-bold mb-6">System durchsuchen</h1>
-				<div class="flex justify-between items-center mb-3">
-
-				</div>
-				<SelectList :options="['E-Mail', 'Ticket Code',]"></SelectList>
+				<h1 class="text-xl sm:text-2xl font-bold mb-6">Suche...</h1>
 				<TextInput v-model="searchQuery" placeholder="Suche..."
 					class="w-full font-normal text-light-gray mt-6 text-xl py-2 px-2" ref="searchInputField">
 				</TextInput>
@@ -14,9 +10,9 @@
 				<div class="flex justify-between items-center mb-6">
 
 				</div>
-				<div class="flex justify-between items-center sm:mx-6">
+				<div class="flex justify-between items-center">
 					<button
-						class="justify-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+						class="w-full mt-3 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 						@click="() => search()">
 						Suchen
 					</button>
@@ -41,15 +37,16 @@
 					</template>
 					<template #content-slot>
 						<div>
-							<div v-for="code in response.ticketCodes" :key="code"
+							<div v-for="ticket in response.tickets" :key="ticket.ticketCode"
 								class="flex items-center w-full mb-1 before:content-['🎟️']">
-								<NuxtLink :to="'/ticket?code=' + code"
-									class=" text-lg font-bold hover:underline ml-3 text-black">
-									{{ code }}
+								<NuxtLink :to="'/ticket?code=' + ticket.ticketCode"
+									class=" text-lg font-bold hover:underline ml-3 text-black"
+									:class="{ 'line-through text-neutral-500': !ticket.valid }">
+									{{ ticket.ticketCode }}
 								</NuxtLink>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22"
 									class="ml-auto mr-3.5" stroke-width="3"
-									@click="handleClickOnSingleCode($event, {email: response.email, ticketCode: code})">
+									@click="handleClickOnSingleCode($event, { email: response.email, ticket: ticket })">
 									<path
 										d="M20 14a2 2 0 1 1-.001-3.999A2 2 0 0 1 20 14ZM6 12a2 2 0 1 1-3.999.001A2 2 0 0 1 6 12Zm8 0a2 2 0 1 1-3.999.001A2 2 0 0 1 14 12Z">
 									</path>
@@ -58,7 +55,13 @@
 						</div>
 					</template>
 				</CollapsibleContainer>
-
+				<div class="flex justify-center items-center mt-6">
+					<button
+						class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+						@click="() => back()">
+						Zurück
+					</button>
+				</div>
 
 
 				<!--Für jedes Ergebnis wird Div erstellt-->
@@ -92,16 +95,16 @@ import { useAuthStore } from '~~/store/authStore'
 
 let searchResponses = ref([])
 
-searchResponses.value = [
-	{
-		email: 'milan.theiss@gmx.net',
-		ticketCodes: ['millan', "asldfE"]
-	},
-	{
-		email: 'milthe@lgs-di.de',
-		ticketCodes: ['ASF3sd', "8sdfAS"]
-	}
-]
+// searchResponses.value = [
+// 	{
+// 		email: 'milan.theiss@gmx.net',
+// 		tickets: [{ticketCode: 'millan', valid: true}, {ticketCode: "9BwJxW", valid: true}]
+// 	},
+// 	{
+// 		email: 'milthe@lgs-di.de',
+// 		tickets: [{ticketCode: 'ASF3sd', valid: true}, {ticketCode: "8sdfAS", valid: false}]
+// 	}
+// ]
 
 let searchQuery = ref('')
 
@@ -110,8 +113,7 @@ const authStore = useAuthStore()
 const dataStore = useDataStore();
 const { $supabase } = useNuxtApp()
 
-let amount = 1
-let showSearchField = ref(false)
+let showSearchField = ref(true)
 
 //TODO Remove
 let isLoading = ref(false)
@@ -146,122 +148,68 @@ onMounted(async () => {
 	)
 })
 
-async function generateTickets() {
-	isLoading.value = true
-	const body = dataStore.buyer
-
-	let newBuyer = false
-
-	let { data: buyer, error } = await $supabase
-		.from('buyers')
-		.select()
-		.eq('email', body.email)
-		.maybeSingle()
-
-	if (!buyer) {
-		newBuyer = true
-
-		const { data: b } = await $supabase
-			.from('buyers')
-			.insert(body, {
-				onConflict: 'email',
-				ignoreDuplicates: false
-			})
-			.select()
-			.eq('email', body.email)
-			.maybeSingle()
-
-		buyer = b
-	}
-
-	const tickets = new Array(amount).fill({
-		event: runtimeConfig.EVENT_ID,
-		buyer: buyer.id,
-		createdBy: (await $supabase.auth.getSession()).data.session.user.id
-	})
-
-	const { data } = await $supabase
-		.from('tickets')
-		.insert(tickets)
-		.select()
-
-
-	if (!data) {
-		generatorError.value.throwError('Die Tickets konnten nicht generiert werden. Bitte versuche es erneut.')
+async function search() {
+	if (searchQuery.value.length < 3) {
+		searchInputField.value.showError('Bitte mindestens 3 Zeichen eingeben')
 		return
 	}
 
-	dataStore.ticketCodes = data.map(ticket => ticket.ticketCode)
+	searchInputField.value.hideError()
+	searchError.value.hideError()
 
-	const res = await $fetch("/api/sendTicket", {
-		method: 'POST',
-		body: {
-			email: dataStore.buyer.email,
-			ticketCodes: dataStore.ticketCodes
-		}
-	})
+	isLoading.value = true
 
-	if (res.ok === true) {
-		console.log('Tickets sent');
-		checkDetails.value = false
-		showConfirmation.value = true
-	} else {
-		showConfirmation.value = false
-		checkDetails.value = true
+	const { data: buyers, error: buyersError } = await $supabase
+		.from('buyers')
+		.select('id, email')
+		.eq('email', searchQuery.value)
 
-		generatorError.value.throwError('Die Tickets konnten nicht versendet werden. Bitte versuche es erneut.')
+	console.log(buyers, buyersError);
 
-		await $supabase
-			.from('tickets')
-			.delete()
-			.in('ticketCode', dataStore.ticketCodes)
-
-		if (newBuyer) {
-			await $supabase
-				.from('buyers')
-				.delete()
-				.eq('id', buyer.id)
-		}
+	if (buyersError) {
+		searchError.value.throwError('Fehler beim Suchen des Käufers')
+		return
 	}
+
+	if (buyers.length === 0) {
+		searchInputField.value.showError()
+		searchError.value.throwError('Kein Eintrag mit dieser E-Mail gefunden')
+		return
+	}
+
+	for (const buyer of buyers) {
+		const { data: tickets, error: ticketError } = await $supabase
+			.from('tickets')
+			.select('ticketCode, valid')
+			.eq('buyer', buyer.id)
+
+		if(ticketError) {
+			searchError.value.throwError('Fehler beim Suchen der Tickets')
+			return
+		}
+
+		searchResponses.value.push({
+			email: buyer.email,
+			tickets: tickets
+		})
+
+		console.log(tickets, ticketError);
+	}
+
+	searchError.value.hideError()
+	searchInputField.value.hideError()
+
+	showSearchField.value = false
+
 	isLoading.value = false
 }
 
+function back() {
+	searchResponses.value = []
+	searchQuery.value = ''
 
-async function onContinue() {
-	if (dataStore.buyer.firstname === '' || dataStore.buyer.lastname === '' || dataStore.buyer.email === '') {
-		inputViewError.value.throwError('Bitte fülle alle Felder aus')
-		return
-	}
-
-	const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-	if (!dataStore.buyer.email.match(EMAIL_REGEX)) {
-		inputViewError.value.throwError('Bitte gib eine gültige E-Mail Adresse an')
-		emailInput.value.showError()
-		emailInput.value.focus()
-		return
-	} else {
-		inputViewError.value.hideError()
-		emailInput.value.hideError()
-		checkDetails.value = true
-	}
-
-}
-
-function cancel() {
-	dataStore.ticketCodes = []
-	dataStore.buyer = {
-		firstname: '',
-		lastname: '',
-		email: ''
-	}
-	amount = 1
-
-	if (checkDetails.value) generatorError.value.hideError()
-	else if (!showConfirmation.value) inputViewError.value.hideError()
-
-	checkDetails.value = false
-	showConfirmation.value = false
+	searchInputField.value.hideError()
+	searchError.value.hideError()
 }
 
 function onClick() {
@@ -274,12 +222,13 @@ function handleClickOnSingleCode(event, data) {
 }
 
 async function onResend(data) {
+	console.log(data);
 	console.log('Trying to resend');
 	const res = await $fetch("/api/sendTicket", {
 		method: 'POST',
 		body: {
 			email: data.email,
-			ticketCodes: data.ticketCodes
+			ticketCodes: [data.ticket.ticketCode]
 		}
 	})
 
@@ -290,10 +239,36 @@ async function onResend(data) {
 		console.log('Tickets sent');
 	} else {
 		//TODO Zeige Toast --> Fehler
+		console.log('Error', res.error);
 	}
 }
 
-function onValidate(data) {
+async function onValidate(data) {
 	console.log(data);
+	const { data: res, status } = await $supabase
+		.from('tickets')
+		.update({ valid: false, validatedAt: new Date().toISOString() })
+		.eq('ticketCode', data.ticket.ticketCode)
+		.select()
+		.maybeSingle()
+
+	if (status !== 200) {
+		//TODO Zeige Toast --> Fehler
+		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+	} else {
+		//TODO Zeige Toast --> Ticket entwertet
+		// loadError.value.hideError()
+		searchResponses.value = searchResponses.value.map((response) => {
+			if (response.email === data.email) {
+				response.tickets = response.tickets.map((ticket) => {
+					if (ticket.ticketCode === data.ticket.ticketCode) {
+						ticket.valid = false
+					}
+					return ticket
+				})
+			}
+			return response
+		})
+	}
 }
 </script>

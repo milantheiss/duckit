@@ -161,7 +161,7 @@ async function loadTicket(code) {
 async function validateTicket(code) {
     const { data, status } = await $supabase
         .from('tickets')
-        .update({ valid: false, validatedAt: new Date() })
+        .update({ valid: false, validatedAt: new Date().toISOString() })
         .eq('ticketCode', code)
         .select()
         .maybeSingle()
@@ -169,16 +169,6 @@ async function validateTicket(code) {
     if (status !== 200) {
         loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
     } else {
-        const { data: buyer } = await $supabase
-            .from('buyers')
-            .select()
-            .eq("id", data.buyer)
-            .maybeSingle()
-
-        if (buyer) {
-            data.buyer = buyer
-        }
-
         loadError.value.hideError()
         ticket.value = data
     }
