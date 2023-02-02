@@ -122,6 +122,7 @@
 import { useDataStore } from '~~/store/dataStore'
 import { useAuthStore } from '~~/store/authStore'
 import { useToast } from "vue-toastification";
+import SendIcon from "~~/composables/SendIcon.vue"
 
 const toast = useToast()
 
@@ -423,6 +424,8 @@ async function onInvalidateAll(data) {
 }
 
 function showToast(){
-	toast.success('Tickets erfolgreich versendet')
+	toast.success('Tickets erfolgreich versendet', {
+		icon: SendIcon
+	})
 }
 </script>
