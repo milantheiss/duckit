@@ -16,9 +16,14 @@
 						@click="() => search()">
 						Suchen
 					</button>
+					<button
+						class="w-full mt-3 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+						@click="() => showToast()">
+						Toast
+					</button>
 				</div>
 			</div>
-			<div v-show="!showSearchField" class="sm:w-[460px]">
+			<div v-show="!showSearchField" class="">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Alle Ergebnisse...</h1>
 				<!--Erst Email -->
 				<CollapsibleContainer v-for="(response, index) in searchResponses" :key="response.email"
@@ -116,6 +121,9 @@
 <script setup>
 import { useDataStore } from '~~/store/dataStore'
 import { useAuthStore } from '~~/store/authStore'
+import { useToast } from "vue-toastification";
+
+const toast = useToast()
 
 let searchResponses = ref([])
 
@@ -266,6 +274,7 @@ async function onResend(data) {
 	console.log(res);
 
 	if (res.ok === true) {
+		toast.success('Tickets erfolgreich versendet')
 		//TODO Zeige Toast --> Tickets versendet
 		console.log('Tickets sent');
 	} else {
@@ -288,6 +297,7 @@ async function onValidate(data) {
 		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
 	} else {
 		//TODO Zeige Toast --> Ticket entwertet
+		toast.success("Das Ticket wurde entwertet!")
 		// loadError.value.hideError()
 		searchResponses.value = searchResponses.value.map((response) => {
 			if (response.email === data.email) {
@@ -317,6 +327,8 @@ async function onInvalidate(data) {
 		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
 	} else {
 		//TODO Zeige Toast --> Ticket entwertet
+		toast("Das Ticket wurde entwertet!")
+		console.log(toast);
 		// loadError.value.hideError()
 		searchResponses.value = searchResponses.value.map((response) => {
 			if (response.email === data.email) {
@@ -408,5 +420,9 @@ async function onInvalidateAll(data) {
 			return response
 		})
 	}
+}
+
+function showToast(){
+	toast.success('Tickets erfolgreich versendet')
 }
 </script>
