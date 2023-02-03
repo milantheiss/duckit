@@ -53,7 +53,7 @@
             </p>
             <p class="text-xl flex justify-between items-center" v-if="ticket.valid">
                 Erstellt am:
-                <span class="font-bold">{{
+                <span class="font-bold ml-3">{{
                     new Date(ticket.createdAt).toLocaleDateString('de-DE', {
                         year: 'numeric',
                         month: 'short',
@@ -63,10 +63,10 @@
                 }}</span>
             </p>
             <p v-if="!ticket.valid" class="text-xl flex justify-between items-center">
-                Entwertet am: <span class="font-bold">{{
-                    new Date(ticket.validatedAt).toLocaleString('de-DE', {
-                        year: 'numeric',
-                        month: 'short',
+                Entwertet am: <span class="font-bold ml-2">{{
+                    new Date(ticket.invalidatedAt).toLocaleString('de-DE', {
+                        year: "2-digit",
+                        month: 'numeric',
                         day: 'numeric',
                         hour: 'numeric',
                         minute: 'numeric',
@@ -77,10 +77,10 @@
             <div class="mt-6 flex items-center"
                 :class="{ 'justify-between': ticket.valid, 'justify-center': !ticket.valid }">
                 <button @click="cancel()"
-                    class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                     Zurück
                 </button>
-                <button @click="validateTicket(ticket.ticketCode)" v-if="ticket.valid"
+                <button @click="invalidateTicket(ticket.ticketCode)" v-if="ticket.valid"
                     class="rounded-lg drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                     Entwerten
                 </button>
@@ -155,31 +155,24 @@ async function loadTicket(code) {
         }
 
         ticket.value = data
+        console.log(ticket.value);
     }
 }
 
-async function validateTicket(code) {
+async function invalidateTicket(code) {
     const { data, status } = await $supabase
         .from('tickets')
-        .update({ valid: false, validatedAt: new Date() })
+        .update({ valid: false, invalidatedAt: new Date().toISOString() })
         .eq('ticketCode', code)
-        .select()
+        .select("id, ticketCode, valid, createdAt, invalidatedAt")
         .maybeSingle()
 
     if (status !== 200) {
         loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
     } else {
-        const { data: buyer } = await $supabase
-            .from('buyers')
-            .select()
-            .eq("id", data.buyer)
-            .maybeSingle()
-
-        if (buyer) {
-            data.buyer = buyer
-        }
-
         loadError.value.hideError()
+        console.log(data);
+        data.buyer = ticket.value.buyer
         ticket.value = data
     }
 }

@@ -25,7 +25,7 @@ export default defineNuxtConfig({
 			EVENT_ID: process.env.EVENT_ID ?? "",
 		},
 	},
-	modules: ["@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt"],
+	modules: ["@pinia/nuxt", "@pinia-plugin-persistedstate/nuxt", '@vueuse/nuxt', '@nuxtjs/device'],
 	app: {
 		head: {
 			title: "LGS ABI 2023",
@@ -41,4 +41,9 @@ export default defineNuxtConfig({
 	imports: {
 		dirs: ["~/composables"],
 	},
+	vite:{
+		ssr: {
+			noExternal: ['vue-toastification']
+		}
+	}
 });

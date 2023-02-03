@@ -5,24 +5,24 @@
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Tickets registrieren</h1>
 
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray">Vorname:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">Vorname:</p>
 					<TextInput v-model="dataStore.buyer.firstname" placeholder="Vorname"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="fnameInput"></TextInput>
+						class="w-fit text-base sm:text-lg font-normal text-light-gray " ref="fnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray">Nachname:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">Nachname:</p>
 					<TextInput v-model="dataStore.buyer.lastname" placeholder="Nachname"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="lnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray">E-Mail:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">E-Mail:</p>
 					<TextInput v-model="dataStore.buyer.email" type="email" placeholder="E-Mail"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="emailInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-6">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Anzahl Tickets:</p>
 					<NumberInput v-model="amount" min="1" max="50"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray" placeholder="1"></NumberInput>
+						class="w-[90px] text-base sm:text-lg font-normal text-light-gray" placeholder="1"></NumberInput>
 				</div>
 				<ErrorMessage ref="inputViewError" class="mb-6"></ErrorMessage>
 				<div class="flex justify-between items-center sm:mx-6">
@@ -67,9 +67,9 @@
 
 					<span class="flex items-center justify-between sm:mx-6 w-full" v-show="!isLoading">
 						<button
-							class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-							@click="cancel()">
-							Abbrechen
+							class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+							@click="back()">
+							Zurück
 						</button>
 						<button
 							class="justify-center items-center rounded-lg  drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -273,6 +273,11 @@ function cancel() {
 	if (checkDetails.value) generatorError.value.hideError()
 	else if (!showConfirmation.value) inputViewError.value.hideError()
 
+	checkDetails.value = false
+	showConfirmation.value = false
+}
+
+function back(){
 	checkDetails.value = false
 	showConfirmation.value = false
 }
