@@ -49,11 +49,11 @@
             </h1>
             <p class="text-xl flex justify-between items-center">
                 Käufer:
-                <span class="font-bold">{{ ticket.buyer?.firstname }} {{ ticket.buyer?.lastname }}</span>
+                <span class="font-bold ml-3">{{ ticket.buyer?.firstname }} {{ ticket.buyer?.lastname }}</span>
             </p>
             <p class="text-xl flex justify-between items-center" v-if="ticket.valid">
                 Erstellt am:
-                <span class="font-bold">{{
+                <span class="font-bold ml-3">{{
                     new Date(ticket.createdAt).toLocaleDateString('de-DE', {
                         year: 'numeric',
                         month: 'short',
@@ -63,7 +63,7 @@
                 }}</span>
             </p>
             <p v-if="!ticket.valid" class="text-xl flex justify-between items-center">
-                Entwertet am: <span class="font-bold">{{
+                Entwertet am: <span class="font-bold ml-3">{{
                     new Date(ticket.invalidatedAt).toLocaleString('de-DE', {
                         year: 'numeric',
                         month: 'short',

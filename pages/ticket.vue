@@ -54,7 +54,7 @@
 					}}</span>
 				</p>
 				<p v-if="!ticket.valid" class="text-xl">
-					Entwertet am <span class="font-bold">{{
+					Entwertet am <span class="font-ml">{{
 						new Date(ticket.validatedAt).toLocaleString('de-DE', {
 							year: 'numeric',
 							month: 'short',
