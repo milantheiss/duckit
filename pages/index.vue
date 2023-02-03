@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div v-if="false">
 		<p>LGS Vofi</p>
 		<P>Wann? 03.02.2023</P>
 		<p>Wo? <a href="https://goo.gl/maps/2RHjdPRwuRxREx5J9">Am Sportplatz 3, 64839 Münster</a></p>
