@@ -66,14 +66,15 @@ const authStore = useAuthStore()
 }
 
 .Vue-Toastification__close-button {
+	width: 2.25rem;
+	height: 2.25rem;
 	color: black;
 }
 
 .Vue-Toastification__icon {
 	margin: 0;
 	margin-right: 0.8rem;
-	width: 1.5rem;
-	height: 1.5rem;
-	vertical-align: middle;
+	width: 2rem;
+	height: 2rem;
 }
 </style>

@@ -3,6 +3,7 @@ import Toast, { POSITION,TYPE } from "vue-toastification"
 import "vue-toastification/dist/index.css" // if needed
 import SuccessIcon from "~~/composables/SuccessIcon.vue"
 import SendIcon from "~~/composables/SendIcon.vue"
+import CloseButtonIconVue from '~~/composables/CloseButtonIcon.vue'
 
 export default defineNuxtPlugin(nuxtApp => {
     nuxtApp.vueApp.use(Toast, {
@@ -15,6 +16,7 @@ export default defineNuxtPlugin(nuxtApp => {
                 icon: SendIcon,
             },
         },
-        maxToasts: 3
+        maxToasts: 3,
+        closeButton: CloseButtonIconVue
     })
 })
