@@ -106,7 +106,6 @@
 </template>
 
 <script setup>
-import { useDataStore } from '~~/store/dataStore'
 import { useAuthStore } from '~~/store/authStore'
 import SendIcon from "~~/composables/SendIcon.vue"
 import ErrorIcon from '~~/composables/ErrorIcon.vue';

@@ -40,5 +40,10 @@ export default defineNuxtConfig({
 	},
 	imports: {
 		dirs: ["~/composables"],
+	},
+	vite:{
+		ssr: {
+			noExternal: ['vue-toastification']
+		}
 	}
 });
