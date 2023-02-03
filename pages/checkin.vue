@@ -77,7 +77,7 @@
             <div class="mt-6 flex items-center"
                 :class="{ 'justify-between': ticket.valid, 'justify-center': !ticket.valid }">
                 <button @click="cancel()"
-                    class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                     Zurück
                 </button>
                 <button @click="invalidateTicket(ticket.ticketCode)" v-if="ticket.valid"
