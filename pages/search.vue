@@ -189,7 +189,7 @@ async function search() {
 
 	let buyers = await searchBuyer(searchQuery.value)
 
-	if (searchQuery.value !== searchQuery.value.toLowerCase()) {
+	if (buyers.length === 0) {
 		searchQuery.value = searchQuery.value.toLowerCase()
 		buyers = await searchBuyer(searchQuery.value)
 	}
