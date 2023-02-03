@@ -114,15 +114,14 @@ import ErrorIcon from '~~/composables/ErrorIcon.vue';
 import FireIcon from '~~/composables/FireIcon.vue';
 import DuckIcon from '~~/composables/DuckIcon.vue';
 
+const authStore = useAuthStore()
+const { $supabase } = useNuxtApp()
 
 const { useToast } = pkg;
 const toast = useToast()
 
 let searchResponses = ref([])
 let searchQuery = ref('')
-
-const authStore = useAuthStore()
-const { $supabase } = useNuxtApp()
 
 let showSearchField = ref(true)
 
