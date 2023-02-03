@@ -401,7 +401,7 @@
   "resolved" "https://registry.npmjs.org/@nuxt/devalue/-/devalue-2.0.0.tgz"
   "version" "2.0.0"
 
-"@nuxt/kit@^3.0.0", "@nuxt/kit@3.0.0":
+"@nuxt/kit@^3.0.0", "@nuxt/kit@^3.0.0-rc.13", "@nuxt/kit@3.0.0":
   "integrity" "sha512-7ZsOLt5s9a0ZleAIzmoD70JwkZf5ti6bDdxl6f8ew7Huxz+ni/oRfTPTX9TrORXsgW5CvDt6Q9M7IJNPkAN/Iw=="
   "resolved" "https://registry.npmjs.org/@nuxt/kit/-/kit-3.0.0.tgz"
   "version" "3.0.0"
@@ -569,6 +569,14 @@
     "vite-node" "^0.25.2"
     "vite-plugin-checker" "^0.5.1"
     "vue-bundle-renderer" "^1.0.0"
+
+"@nuxtjs/device@^3.0.0":
+  "integrity" "sha512-81ZXEyJ/6rZEGTUIfgUjsHWBWB1InHayN83LVW63/TclVyrrb/Si47BczkGcIgmiETcKTM9iaqMLcDfu9M7BNg=="
+  "resolved" "https://registry.npmjs.org/@nuxtjs/device/-/device-3.0.0.tgz"
+  "version" "3.0.0"
+  dependencies:
+    "@nuxt/kit" "^3.0.0-rc.13"
+    "defu" "^6.1.0"
 
 "@pinia-plugin-persistedstate/nuxt@^1.0.0":
   "integrity" "sha512-oBLnkFXy0mcP9wCR0NQj1SguhgalEoubDF302gpRr1lh0V34vSL2Nlw8XDwRrULq5v3eHt4da632YSjNny1+BA=="
@@ -2036,7 +2044,7 @@
   "resolved" "https://registry.npmjs.org/defu/-/defu-3.2.2.tgz"
   "version" "3.2.2"
 
-"defu@^6.0.0", "defu@^6.1.1", "defu@^6.1.2":
+"defu@^6.0.0", "defu@^6.1.0", "defu@^6.1.1", "defu@^6.1.2":
   "integrity" "sha512-+uO4+qr7msjNNWKYPHqN/3+Dx3NFkmIzayk2L1MyZQlvgZb/J1A0fo410dpKrN2SnqFjt8n4JL8fDJE0wIgjFQ=="
   "resolved" "https://registry.npmjs.org/defu/-/defu-6.1.2.tgz"
   "version" "6.1.2"
@@ -5325,6 +5333,13 @@
   "integrity" "sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ=="
   "resolved" "https://registry.npmjs.org/vue-devtools-stub/-/vue-devtools-stub-0.1.0.tgz"
   "version" "0.1.0"
+
+"vue-mobile-detection@^2.0.1":
+  "integrity" "sha512-ziB0Rp8Snp08+p7E+WCRzeYYYp0ddPaqHlFxWN0kpLAddB5D/PRwgIv18P08hkhwNFRgBQ71T19jNIbttR7P0g=="
+  "resolved" "https://registry.npmjs.org/vue-mobile-detection/-/vue-mobile-detection-2.0.1.tgz"
+  "version" "2.0.1"
+  dependencies:
+    "vue" "^3.2.20"
 
 "vue-router@^4.1.6":
   "integrity" "sha512-DYWYwsG6xNPmLq/FmZn8Ip+qrhFEzA14EI12MsMgVxvHFDYvlr4NXpVF5hrRH1wVcDP8fGi5F4rxuJSl8/r+EQ=="

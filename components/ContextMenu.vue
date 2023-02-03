@@ -17,8 +17,8 @@ let top = ref(0) // top position
 
 function close() {
   show.value = false;
-  left = 0;
-  top = 0;
+  left.value = 0;
+  top.value = 0;
 }
 
 function open(evt, data) {
@@ -30,8 +30,8 @@ function open(evt, data) {
 
 
   // updates position of context menu 
-  left.value = evt.pageX || evt.clientX;
-  top.value = evt.pageY || evt.clientY;
+  left.value = evt.pageX - 80 || evt.clientX - 80;
+  top.value = evt.pageY + 20 || evt.clientY + 20;
 
   show.value = true;
 }

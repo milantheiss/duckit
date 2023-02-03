@@ -16,26 +16,21 @@
 						@click="() => search()">
 						Suchen
 					</button>
-					<button
-						class="w-full mt-3 justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-6 text-lg font-medium text-white shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-						@click="() => showToast()">
-						Toast
-					</button>
 				</div>
 			</div>
-			<div v-show="!showSearchField" class="">
+			<!--Search Results-->
+			<div v-show="!showSearchField" class="flex flex-col  w-full">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Alle Ergebnisse...</h1>
-				<!--Erst Email -->
 				<CollapsibleContainer v-for="(response, index) in searchResponses" :key="response.email"
 					ref="collapsibleContrainer" :show="index === 0"
 					:class="{ 'mb-3': index !== (searchResponses.length - 1) }">
 					<template #header>
-						<div class="flex justify-between w-full items-center">
-							<p class="w-fit text-base sm:text-lg font-medium text-black hover:cursor-pointer"
+						<div class="flex justify-between items-center w-full">
+							<p class="w-full text-base sm:text-lg font-medium text-black hover:cursor-pointer"
 								@click="$refs.collapsibleContrainer[index].toggleShowContent()">{{ response.email }}</p>
 							<button
-								class="justify-center rounded-lg drop-shadow-md border border-transparent bg-indigo-600 py-0.5 px-2.5 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-								@click="handleClickOnSingleCode($event, response)">
+								class="justify-center rounded-lg drop-shadow-md border border-transparent ml-8 bg-indigo-600 py-0.5 px-2.5 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+								@click="handleClickOnEmail($event, response)">
 								Alle
 							</button>
 						</div>
@@ -43,7 +38,7 @@
 					<template #content-slot>
 						<div>
 							<div v-for="ticket in response.tickets" :key="ticket.ticketCode"
-								class="flex items-center w-full mb-1 before:content-['🎟️']">
+								class="flex items-center mb-1 before:content-['🎟️']">
 								<NuxtLink :to="'/ticket?code=' + ticket.ticketCode"
 									class=" text-lg font-bold hover:underline ml-3 text-black"
 									:class="{ 'line-through text-neutral-500': !ticket.valid }">
@@ -67,14 +62,6 @@
 						Zurück
 					</button>
 				</div>
-
-
-				<!--Für jedes Ergebnis wird Div erstellt-->
-				<!--Add Action Button/Context Menu-->
-
-				<!--Dann versetzt alle Ticket Codes-->
-				<!--Jedes Element hat Menu Button mit dem Aktionen ausgewählt werden können-->
-				<!--Wenn Aktion passiert wird Bestätigungstoast angezeigt-->
 			</div>
 		</div>
 	</div>
@@ -123,33 +110,18 @@ import { useDataStore } from '~~/store/dataStore'
 import { useAuthStore } from '~~/store/authStore'
 import { useToast } from "vue-toastification";
 import SendIcon from "~~/composables/SendIcon.vue"
+import ErrorIcon from '~~/composables/ErrorIcon.vue';
+import FireIcon from '~~/composables/FireIcon.vue';
 
 const toast = useToast()
 
 let searchResponses = ref([])
-
-// searchResponses.value = [
-// 	{
-// 		email: 'milan.theiss@gmx.net',
-// 		tickets: [{ticketCode: 'millan', valid: true}, {ticketCode: "9BwJxW", valid: true}]
-// 	},
-// 	{
-// 		email: 'milthe@lgs-di.de',
-// 		tickets: [{ticketCode: 'ASF3sd', valid: true}, {ticketCode: "8sdfAS", valid: false}]
-// 	}
-// ]
-
 let searchQuery = ref('')
 
-const runtimeConfig = useRuntimeConfig()
 const authStore = useAuthStore()
-const dataStore = useDataStore();
 const { $supabase } = useNuxtApp()
 
 let showSearchField = ref(true)
-
-//TODO Remove
-let isLoading = ref(false)
 
 // refs
 const searchInputField = ref(null)
@@ -163,7 +135,7 @@ definePageMeta({
 })
 
 useHead({
-	title: 'System durchsuchen'
+	title: 'Suche'
 })
 
 onMounted(async () => {
@@ -183,11 +155,6 @@ onMounted(async () => {
 })
 
 async function search() {
-	if (searchQuery.value.length < 3) {
-		searchInputField.value.showError('Bitte mindestens 3 Zeichen eingeben')
-		return
-	}
-
 	const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 	if (!searchQuery.value.match(EMAIL_REGEX)) {
@@ -198,8 +165,6 @@ async function search() {
 
 	searchInputField.value.hideError()
 	searchError.value.hideError()
-
-	isLoading.value = true
 
 	const { data: buyers, error: buyersError } = await $supabase
 		.from('buyers')
@@ -242,8 +207,6 @@ async function search() {
 	searchInputField.value.hideError()
 
 	showSearchField.value = false
-
-	isLoading.value = false
 }
 
 function back() {
@@ -261,6 +224,10 @@ function handleClickOnSingleCode(event, data) {
 	ctxMenuSingleCode.value.open(event, data)
 }
 
+function handleClickOnEmail(event, data) {
+	ctxMenuAllCode.value.open(event, data)
+}
+
 async function onResend(data) {
 	console.log(data);
 	console.log('Trying to resend');
@@ -275,11 +242,16 @@ async function onResend(data) {
 	console.log(res);
 
 	if (res.ok === true) {
-		toast.success('Tickets erfolgreich versendet')
-		//TODO Zeige Toast --> Tickets versendet
+		toast.success('Das Ticket wurde erfolgreich versendet', {
+			icon: SendIcon,
+			timeout: 4000
+		})
 		console.log('Tickets sent');
 	} else {
-		//TODO Zeige Toast --> Fehler
+		toast.error('Das Ticket konnte nicht versendet werden', {
+			icon: ErrorIcon,
+			timeout: 4000
+		})
 		console.log('Error', res.error);
 	}
 }
@@ -294,11 +266,15 @@ async function onValidate(data) {
 		.maybeSingle()
 
 	if (status !== 200) {
-		//TODO Zeige Toast --> Fehler
-		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+		toast.error('Das Ticket konnte nicht gültig gemacht werden', {
+			icon: ErrorIcon,
+			timeout: 4000
+		})
 	} else {
-		//TODO Zeige Toast --> Ticket entwertet
-		toast.success("Das Ticket wurde entwertet!")
+		toast('Das Ticket wurde gültig gemacht', {
+			icon: FireIcon,
+			timeout: 4000
+		})
 		// loadError.value.hideError()
 		searchResponses.value = searchResponses.value.map((response) => {
 			if (response.email === data.email) {
@@ -324,11 +300,15 @@ async function onInvalidate(data) {
 		.maybeSingle()
 
 	if (status !== 200) {
-		//TODO Zeige Toast --> Fehler
-		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+		toast.error('Das Ticket konnte nicht entwertet werden', {
+			icon: ErrorIcon,
+			timeout: 4000
+		})
 	} else {
-		//TODO Zeige Toast --> Ticket entwertet
-		toast("Das Ticket wurde entwertet!")
+		toast('Das Ticket wurde entwertet', {
+			icon: FireIcon,
+			timeout: 4000
+		})
 		console.log(toast);
 		// loadError.value.hideError()
 		searchResponses.value = searchResponses.value.map((response) => {
@@ -346,8 +326,6 @@ async function onInvalidate(data) {
 }
 
 async function onResendAll(data) {
-	console.log(data);
-	console.log('Trying to resend');
 	const res = await $fetch("/api/sendTicket", {
 		method: 'POST',
 		body: {
@@ -356,35 +334,48 @@ async function onResendAll(data) {
 		}
 	})
 
-	console.log(res);
-
 	if (res.ok === true) {
-		//TODO Zeige Toast --> Tickets versendet
+		toast.success('Alle Tickets wurde erfolgreich versendet', {
+			icon: SendIcon,
+			timeout: 4000
+		})
 		console.log('Tickets sent');
 	} else {
-		//TODO Zeige Toast --> Fehler
+		toast.error('Die Tickets konnten nicht versendet werden', {
+			icon: ErrorIcon,
+			timeout: 4000
+		})
 		console.log('Error', res.error);
 	}
 }
 
 async function onValidateAll(data) {
-	console.log(data);
+	const ticketCodes = data.tickets.map(ticket => ticket.ticketCode)
+
+	console.log(ticketCodes);
+
 	const { data: res, status } = await $supabase
 		.from('tickets')
 		.update({ valid: true, invalidatedAt: null })
-		.in('ticketCode', data.tickets.map(ticket => ticket.ticketCode))
+		.in('ticketCode', ticketCodes)
 		.select()
 
+	console.log(res, status);
+
 	if (status !== 200) {
-		//TODO Zeige Toast --> Fehler
-		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+		toast.error('Alle Tickets konnten nicht gültig gemacht werden', {
+			icon: ErrorIcon,
+			timeout: 4000
+		})
 	} else {
-		//TODO Zeige Toast --> Ticket entwertet
-		// loadError.value.hideError()
+		toast('Alle Tickets wurden gültig gemacht', {
+			icon: FireIcon,
+			timeout: 4000
+		})
 		searchResponses.value = searchResponses.value.map((response) => {
 			if (response.email === data.email) {
 				response.tickets = response.tickets.map((ticket) => {
-					if (ticket.ticketCode === data.ticket.ticketCode) {
+					if (ticketCodes.some(t => t === ticket.ticketCode)) {
 						ticket.valid = true
 					}
 					return ticket
@@ -396,23 +387,32 @@ async function onValidateAll(data) {
 }
 
 async function onInvalidateAll(data) {
-	console.log(data);
+	const ticketCodes = data.tickets.map(ticket => ticket.ticketCode)
+	console.log(ticketCodes);
+
 	const { data: res, status } = await $supabase
 		.from('tickets')
-		.update({ valid: true, invalidatedAt: new Date().toISOString() })
-		.in('ticketCode', data.tickets.map(ticket => ticket.ticketCode))
+		.update({ valid: false, invalidatedAt: new Date().toISOString() })
+		.in('ticketCode', ticketCodes)
 		.select()
 
+	console.log(res, status);
+
+
 	if (status !== 200) {
-		//TODO Zeige Toast --> Fehler
-		// loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
+		toast.error('Alle Tickets konnten nicht entwertet werden', {
+			icon: ErrorIcon,
+			timeout: 4000
+		})
 	} else {
-		//TODO Zeige Toast --> Ticket entwertet
-		// loadError.value.hideError()
+		toast('Alle Tickets wurden entwertet', {
+			icon: FireIcon,
+			timeout: 4000
+		})
 		searchResponses.value = searchResponses.value.map((response) => {
 			if (response.email === data.email) {
 				response.tickets = response.tickets.map((ticket) => {
-					if (ticket.ticketCode === data.ticket.ticketCode) {
+					if (ticketCodes.some(t => t === ticket.ticketCode)) {
 						ticket.valid = false
 					}
 					return ticket
@@ -421,11 +421,5 @@ async function onInvalidateAll(data) {
 			return response
 		})
 	}
-}
-
-function showToast(){
-	toast.success('Tickets erfolgreich versendet', {
-		icon: SendIcon
-	})
 }
 </script>

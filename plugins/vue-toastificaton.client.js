@@ -14,6 +14,7 @@ export default defineNuxtPlugin(nuxtApp => {
             [TYPE.SEND]: {
                 icon: SendIcon,
             },
-        }
+        },
+        maxToasts: 3
     })
 })
