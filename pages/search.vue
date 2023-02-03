@@ -108,13 +108,14 @@
 <script setup>
 import { useDataStore } from '~~/store/dataStore'
 import { useAuthStore } from '~~/store/authStore'
-import { useToast } from "vue-toastification";
+import pkg from "vue-toastification";
 import SendIcon from "~~/composables/SendIcon.vue"
 import ErrorIcon from '~~/composables/ErrorIcon.vue';
 import FireIcon from '~~/composables/FireIcon.vue';
 import DuckIcon from '~~/composables/DuckIcon.vue';
 
 
+const { useToast } = pkg;
 const toast = useToast()
 
 let searchResponses = ref([])
