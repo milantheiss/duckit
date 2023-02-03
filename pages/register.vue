@@ -5,24 +5,24 @@
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Tickets registrieren</h1>
 
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray">Vorname:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">Vorname:</p>
 					<TextInput v-model="dataStore.buyer.firstname" placeholder="Vorname"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="fnameInput"></TextInput>
+						class="w-fit text-base sm:text-lg font-normal text-light-gray " ref="fnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray">Nachname:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">Nachname:</p>
 					<TextInput v-model="dataStore.buyer.lastname" placeholder="Nachname"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="lnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray">E-Mail:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">E-Mail:</p>
 					<TextInput v-model="dataStore.buyer.email" type="email" placeholder="E-Mail"
 						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="emailInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-6">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Anzahl Tickets:</p>
 					<NumberInput v-model="amount" min="1" max="50"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray" placeholder="1"></NumberInput>
+						class="w-[90px] text-base sm:text-lg font-normal text-light-gray" placeholder="1"></NumberInput>
 				</div>
 				<ErrorMessage ref="inputViewError" class="mb-6"></ErrorMessage>
 				<div class="flex justify-between items-center sm:mx-6">

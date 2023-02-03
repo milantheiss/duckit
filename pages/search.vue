@@ -3,7 +3,7 @@
 		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left">
 			<div v-show="showSearchField">
 				<h1 class="text-xl sm:text-2xl font-bold">Suche...</h1>
-				<p class="text-base sm:text-lg font-normal text-dark-grey">
+				<p class="text-lg font-normal text-dark-grey">
 					nach E-Mail
 				</p>
 				<TextInput v-model="searchQuery" placeholder="E-Mail"

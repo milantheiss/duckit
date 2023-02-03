@@ -55,13 +55,13 @@
 				</p>
 				<p v-if="!ticket.valid" class="text-xl">
 					Entwertet am <span class="font-ml">{{
-						new Date(ticket.validatedAt).toLocaleString('de-DE', {
-							year: 'numeric',
-							month: 'short',
-							day: 'numeric',
-							hour: 'numeric',
-							minute: 'numeric',
-						})
+						new Date(ticket.invalidatedAt).toLocaleString('de-DE', {
+                        year: "2-digit",
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                    })
 					}}</span>
 				</p>
 			</div>

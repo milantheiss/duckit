@@ -49,7 +49,7 @@
             </h1>
             <p class="text-xl flex justify-between items-center">
                 Käufer:
-                <span class="font-bold ml-3">{{ ticket.buyer?.firstname }} {{ ticket.buyer?.lastname }}</span>
+                <span class="font-bold">{{ ticket.buyer?.firstname }} {{ ticket.buyer?.lastname }}</span>
             </p>
             <p class="text-xl flex justify-between items-center" v-if="ticket.valid">
                 Erstellt am:
@@ -63,10 +63,10 @@
                 }}</span>
             </p>
             <p v-if="!ticket.valid" class="text-xl flex justify-between items-center">
-                Entwertet am: <span class="font-bold ml-3">{{
+                Entwertet am: <span class="font-bold ml-2">{{
                     new Date(ticket.invalidatedAt).toLocaleString('de-DE', {
-                        year: 'numeric',
-                        month: 'short',
+                        year: "2-digit",
+                        month: 'numeric',
                         day: 'numeric',
                         hour: 'numeric',
                         minute: 'numeric',
@@ -155,6 +155,7 @@ async function loadTicket(code) {
         }
 
         ticket.value = data
+        console.log(ticket.value);
     }
 }
 
@@ -163,13 +164,15 @@ async function invalidateTicket(code) {
         .from('tickets')
         .update({ valid: false, invalidatedAt: new Date().toISOString() })
         .eq('ticketCode', code)
-        .select()
+        .select("id, ticketCode, valid, createdAt, invalidatedAt")
         .maybeSingle()
 
     if (status !== 200) {
         loadError.value.throwError("Das Ticket konnte nicht entwertet werden!")
     } else {
         loadError.value.hideError()
+        console.log(data);
+        data.buyer = ticket.value.buyer
         ticket.value = data
     }
 }

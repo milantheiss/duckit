@@ -9,8 +9,7 @@
                 v-if="authStore.authenticated">
                 <span class="hover:underline">Logout</span>
             </p>
-            <p class="mx-2">|</p>
-            <NuxtLink to="/legalNotice" class="text-lg font-semibold before:content-['↗️']">
+            <NuxtLink to="/legalNotice" class="text-lg font-semibold before:content-['↗️'] ml-6">
                 <span class="hover:underline">Impressum</span>
             </NuxtLink>
         </div>
