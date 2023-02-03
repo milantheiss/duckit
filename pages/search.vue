@@ -38,7 +38,7 @@
 					<template #content-slot>
 						<div>
 							<div v-for="ticket in response.tickets" :key="ticket.ticketCode"
-								class="flex items-center mb-1 before:content-['🎟️']">
+								class="flex items-center mb-3 before:content-['🎟️']">
 								<NuxtLink :to="'/ticket?code=' + ticket.ticketCode"
 									class=" text-lg font-bold hover:underline ml-3 text-black"
 									:class="{ 'line-through text-neutral-500': !ticket.valid }">
@@ -57,7 +57,7 @@
 				</CollapsibleContainer>
 				<div class="flex justify-center items-center mt-6">
 					<button
-						class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-indigo-600 py-1.5 px-6 text-lg font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+						class="rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
 						@click="() => back()">
 						Zurück
 					</button>
@@ -112,6 +112,8 @@ import { useToast } from "vue-toastification";
 import SendIcon from "~~/composables/SendIcon.vue"
 import ErrorIcon from '~~/composables/ErrorIcon.vue';
 import FireIcon from '~~/composables/FireIcon.vue';
+import DuckIcon from '~~/composables/DuckIcon.vue';
+
 
 const toast = useToast()
 
@@ -163,19 +165,35 @@ async function search() {
 		return
 	}
 
-	searchInputField.value.hideError()
-	searchError.value.hideError()
+	const normalizeEmail = (email) => {
+		const split = email.split("@");
+		return [split[0], split[1].toLowerCase()].join("@");
+	};
 
-	const { data: buyers, error: buyersError } = await $supabase
-		.from('buyers')
-		.select('id, email')
-		.eq('email', searchQuery.value)
+	const searchBuyer = async (email) => {
+		searchInputField.value.hideError()
+		searchError.value.hideError()
 
-	console.log(buyers, buyersError);
+		const { data: b, error: buyersError } = await $supabase
+			.from('buyers')
+			.select('id, email')
+			.eq('email', email)
 
-	if (buyersError) {
-		searchError.value.throwError('Fehler beim Suchen des Käufers')
-		return
+		if (buyersError) {
+			searchError.value.throwError('Fehler beim Suchen des Käufers')
+			return
+		}
+
+		return b
+	}
+
+	searchQuery.value = normalizeEmail(searchQuery.value)
+
+	let buyers = await searchBuyer(searchQuery.value)
+
+	if (searchQuery.value !== searchQuery.value.toLowerCase()) {
+		searchQuery.value = searchQuery.value.toLowerCase()
+		buyers = await searchBuyer(searchQuery.value)
 	}
 
 	if (buyers.length === 0) {
@@ -199,8 +217,6 @@ async function search() {
 			email: buyer.email,
 			tickets: tickets
 		})
-
-		console.log(tickets, ticketError);
 	}
 
 	searchError.value.hideError()
@@ -220,7 +236,6 @@ function back() {
 }
 
 function handleClickOnSingleCode(event, data) {
-	console.log(event, data);
 	ctxMenuSingleCode.value.open(event, data)
 }
 
@@ -229,7 +244,6 @@ function handleClickOnEmail(event, data) {
 }
 
 async function onResend(data) {
-	console.log(data);
 	console.log('Trying to resend');
 	const res = await $fetch("/api/sendTicket", {
 		method: 'POST',
@@ -238,8 +252,6 @@ async function onResend(data) {
 			ticketCodes: [data.ticket.ticketCode]
 		}
 	})
-
-	console.log(res);
 
 	if (res.ok === true) {
 		toast.success('Das Ticket wurde erfolgreich versendet', {
@@ -257,7 +269,6 @@ async function onResend(data) {
 }
 
 async function onValidate(data) {
-	console.log(data);
 	const { data: res, status } = await $supabase
 		.from('tickets')
 		.update({ valid: true, invalidatedAt: null })
@@ -272,7 +283,7 @@ async function onValidate(data) {
 		})
 	} else {
 		toast('Das Ticket wurde gültig gemacht', {
-			icon: FireIcon,
+			icon: DuckIcon,
 			timeout: 4000
 		})
 		// loadError.value.hideError()
@@ -291,7 +302,6 @@ async function onValidate(data) {
 }
 
 async function onInvalidate(data) {
-	console.log(data);
 	const { data: res, status } = await $supabase
 		.from('tickets')
 		.update({ valid: false, invalidatedAt: new Date().toISOString() })
@@ -309,8 +319,6 @@ async function onInvalidate(data) {
 			icon: FireIcon,
 			timeout: 4000
 		})
-		console.log(toast);
-		// loadError.value.hideError()
 		searchResponses.value = searchResponses.value.map((response) => {
 			if (response.email === data.email) {
 				response.tickets = response.tickets.map((ticket) => {
@@ -352,15 +360,11 @@ async function onResendAll(data) {
 async function onValidateAll(data) {
 	const ticketCodes = data.tickets.map(ticket => ticket.ticketCode)
 
-	console.log(ticketCodes);
-
 	const { data: res, status } = await $supabase
 		.from('tickets')
 		.update({ valid: true, invalidatedAt: null })
 		.in('ticketCode', ticketCodes)
 		.select()
-
-	console.log(res, status);
 
 	if (status !== 200) {
 		toast.error('Alle Tickets konnten nicht gültig gemacht werden', {
@@ -369,7 +373,7 @@ async function onValidateAll(data) {
 		})
 	} else {
 		toast('Alle Tickets wurden gültig gemacht', {
-			icon: FireIcon,
+			icon: DuckIcon,
 			timeout: 4000
 		})
 		searchResponses.value = searchResponses.value.map((response) => {
@@ -388,16 +392,12 @@ async function onValidateAll(data) {
 
 async function onInvalidateAll(data) {
 	const ticketCodes = data.tickets.map(ticket => ticket.ticketCode)
-	console.log(ticketCodes);
 
 	const { data: res, status } = await $supabase
 		.from('tickets')
 		.update({ valid: false, invalidatedAt: new Date().toISOString() })
 		.in('ticketCode', ticketCodes)
 		.select()
-
-	console.log(res, status);
-
 
 	if (status !== 200) {
 		toast.error('Alle Tickets konnten nicht entwertet werden', {

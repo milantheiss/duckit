@@ -30,7 +30,7 @@ function open(evt, data) {
 
 
   // updates position of context menu 
-  left.value = evt.pageX - 80 || evt.clientX - 80;
+  left.value = evt.pageX - 90 || evt.clientX - 90;
   top.value = evt.pageY + 20 || evt.clientY + 20;
 
   show.value = true;
