@@ -178,7 +178,7 @@ async function generateTickets() {
 			.from('buyers')
 			.insert(body, {
 				onConflict: 'email',
-				ignoreDuplicates: false
+				ignoreDuplicates: true
 			})
 			.select()
 			.eq('email', body.email)
