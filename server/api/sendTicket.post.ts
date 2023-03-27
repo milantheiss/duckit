@@ -132,16 +132,16 @@ async function generatePDF(ticketCode: string) {
 
 	pdf.addImage(qrcode, "png", 25, 70.14, 98, 98);
 
-	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Abi Feier", 40, 21.844);
+	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Abi Feier", 28.872, 21.844);
 
 	const calIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/1c3e70fa8ad1890b4458acc5a64fc87b/raw/calendar_icon")).text();
 
-	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 07.07.2023", 33, 39);
+	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 25.169, 32, 9, 9).text("Wann? Am 07.07.2023", 39.169, 39).text("Einlass ab 22:30 Uhr",  60.169, 54);
 
 	const pushpinIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/9b8201b82c6777cf29263e9596bf867a/raw/pushpin_icon")).text();
 
-	pdf.addImage(pushpinIcon, "PNG", 19, 43, 9, 9).text("Wo? Römerhalle Dieburg - In d. Altstadt 5, Dieburg", 33, 48.928)
-	.text("In d. Altstadt 5, Dieburg", 73, 56.928);
+	pdf.addImage(pushpinIcon, "PNG", 25.169, 59, 9, 9).text("Wo? Römerhalle Dieburg",  39.169, 64.928)
+	.text("In d. Altstadt 5, Dieburg", 53.643, 72.928);
 
 	pdf
 		.setFont("Ubuntu-Bold")
