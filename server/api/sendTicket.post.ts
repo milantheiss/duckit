@@ -136,12 +136,12 @@ async function generatePDF(ticketCode: string) {
 
 	const calIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/1c3e70fa8ad1890b4458acc5a64fc87b/raw/calendar_icon")).text();
 
-	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 25.169, 32, 9, 9).text("Wann? Am 07.07.2023", 39.169, 39).text("Einlass ab 22:30 Uhr", 58.169, 47);
+	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 25.169, 32, 9, 9).text("Wann? Am 07.07.2023", 39.169, 39).text("Einlass ab 22:30 Uhr", 60.186, 47);
 
 	const pushpinIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/9b8201b82c6777cf29263e9596bf867a/raw/pushpin_icon")).text();
 
 	pdf.addImage(pushpinIcon, "PNG", 25.169, 49.072, 9, 9).text("Wo? Römerhalle Dieburg",  39.169, 55)
-	.text("In d. Altstadt 5, Dieburg", 51.640, 63);
+	.text("In d. Altstadt 5, Dieburg", 53.657, 63);
 
 	pdf
 		.setFont("Ubuntu-Bold")
