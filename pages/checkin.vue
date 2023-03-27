@@ -101,6 +101,7 @@ const codeInputError = ref(null)
 
 const authStore = useAuthStore()
 const { $supabase } = useNuxtApp()
+const runtimeConfig = useRuntimeConfig()
 
 onMounted(async () => {
     let user = ref((await $supabase.auth.getSession()).data.session)
@@ -135,6 +136,7 @@ async function loadTicket(code) {
         .from('tickets')
         .select()
         .eq("ticketCode", code)
+        .eq("event", runtimeConfig.EVENT_ID)
         .maybeSingle()
 
     if (data === null) {
@@ -155,7 +157,6 @@ async function loadTicket(code) {
         }
 
         ticket.value = data
-        console.log(ticket.value);
     }
 }
 

@@ -75,6 +75,7 @@ import { useAuthStore } from '~/store/authStore.ts'
 const route = useRoute()
 const authStore = useAuthStore()
 const { $supabase } = useNuxtApp()
+const runtimeConfig = useRuntimeConfig()
 
 const codeLoadingError = ref(null)
 const codeInputField = ref(null)
@@ -110,6 +111,7 @@ async function loadTicket(code) {
 			.from('tickets')
 			.select()
 			.eq("ticketCode", code)
+			.eq("event", runtimeConfig.EVENT_ID)
 			.maybeSingle()
 
 		if (!data) {

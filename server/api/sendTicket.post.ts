@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
 	const html = (ticketCodes: string[]) => {
 		let html =
-			"<html><head><meta charset='utf-8'></head><body><h2>Ticket für die LGS Vofi am 03.02.2023</h2><p>Bitte halte deinen QR Code und deinen Ausweis für die Einlasskontrolle bereit.</p><p>Wenn du noch nicht volljährig bist, benötigst du auch einen <a href='https://muttizettel.net/'>Muttizettel</a>.</p><p>Den QR Code findest du im Anhang dieser E-Mail oder du kannst ihn dir auf unserer Website generieren lassen. <br>(Klicke einfach auf den Code)</p>";
+			"<html><head><meta charset='utf-8'></head><body><h2>Ticket für die LGS Abi Feier am 07.07.2023</h2><p>Bitte halte deinen QR Code für die Einlasskontrolle bereit.</p><p>Den QR Code findest du im Anhang dieser E-Mail oder du kannst ihn dir auf unserer Website generieren lassen. <br>(Klicke einfach auf den Code)</p>";
 		ticketCodes.forEach((ticketCode: string) => {
 			html += `<p><a href="https://lgs-abi2023.de/ticket?code=${ticketCode}">🎟️ <span id="ticket">${ticketCode}</span></a></p>`;
 		});
@@ -32,9 +32,8 @@ export default defineEventHandler(async (event) => {
 	};
 
 	const message = (ticketCodes: string[]) => {
-		let text = "Hier sind deine Tickets für die LGS Vofi am 03.02.2023:\n";
-		text += "Bitte halte deinen QR Code und deinen Ausweis für die Einlasskontrolle bereit.\n";
-		text += "Wenn du noch nicht volljährig bist benötigst du auch einen Mutti Zettel.\n";
+		let text = "Hier sind deine Tickets für die LGS Abi Feier am 07.07.2023:\n";
+		text += "Bitte halte deinen QR Code bereit.\n";
 		text += "Deine Ticketcodes:\n";
 		ticketCodes.forEach((ticketCode: string) => {
 			text += `${ticketCode}\n`;
@@ -55,9 +54,9 @@ export default defineEventHandler(async (event) => {
 		});
 
 		return await transporter.sendMail({
-			from: "LGS Vofi Ticket <noreply@lgs-abi2023.de>",
+			from: "LGS Abi Feier Ticket <noreply@lgs-abi2023.de>",
 			to: data.email,
-			subject: "Deine Ticket für die LGS Vofi am 03.02.2023",
+			subject: "Deine Ticket für die LGS Abi Feier am 07.07.2023",
 			text: message(data.ticketCodes),
 			html: html(data.ticketCodes),
 			attachments: await Promise.all(attachments),
@@ -133,25 +132,16 @@ async function generatePDF(ticketCode: string) {
 
 	pdf.addImage(qrcode, "png", 25, 70.14, 98, 98);
 
-	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Vofi", 40, 21.844);
+	pdf.setFont("Ubuntu-Bold").setFontSize(25).text("Ticket - LGS Abi Feier", 40, 21.844);
 
 	const calIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/1c3e70fa8ad1890b4458acc5a64fc87b/raw/calendar_icon")).text();
 
-	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 03.02.2023 ab 20 Uhr", 33, 39);
+	pdf.setFont("Ubuntu-Regular").setFontSize(18).addImage(calIcon, "PNG", 19, 32, 9, 9).text("Wann? Am 07.07.2023", 33, 39);
 
 	const pushpinIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/9b8201b82c6777cf29263e9596bf867a/raw/pushpin_icon")).text();
 
-	pdf.addImage(pushpinIcon, "PNG", 19, 43, 9, 9).text("Wo? Am Sportplatz 3 - Altheim", 33, 48.928);
-
-	const warningIcon = await (await fetch("https://gist.githubusercontent.com/milantheiss/f0763b7b8f00cc90b88cbeb2a4cd97ee/raw/warning_icon")).text();
-
-	pdf
-		.setFont("Ubuntu-Medium")
-		.setFontSize(20)
-		.addImage(warningIcon, "PNG", 19, 52, 9, 9)
-		.text("Bitte halte dieses Ticket", 33, 59.475)
-		.text("& dein Ausweis bei der ", 33, 67.475)
-		.text("Einlasskontrolle bereit!", 33, 74.475);
+	pdf.addImage(pushpinIcon, "PNG", 19, 43, 9, 9).text("Wo? Römerhalle Dieburg - In d. Altstadt 5, Dieburg", 33, 48.928)
+	.text("In d. Altstadt 5, Dieburg", 73, 56.928);
 
 	pdf
 		.setFont("Ubuntu-Bold")
