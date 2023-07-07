@@ -25,11 +25,11 @@
 					ref="collapsibleContrainer" :show="index === 0"
 					:class="{ 'mb-3': index !== (searchResponses.length - 1) }">
 					<template #header>
-						<div class="flex justify-between items-center w-full">
-							<p class="w-full text-base sm:text-lg font-medium text-black hover:cursor-pointer"
+						<div class="flex justify-between items-center w-full gap-4">
+							<p class="text-base sm:text-lg font-medium text-black hover:cursor-pointer truncate"
 								@click="$refs.collapsibleContrainer[index].toggleShowContent()">{{ response.email }}</p>
 							<button
-								class="justify-center rounded-lg drop-shadow-md border border-transparent ml-8 bg-indigo-600 py-0.5 px-2.5 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+								class="justify-center rounded-lg drop-shadow-md border border-transparent bg-indigo-600 py-0.5 px-2.5 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 								@click="handleClickOnEmail($event, response)">
 								Alle
 							</button>
