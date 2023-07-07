@@ -1,7 +1,7 @@
 <template>
 	<div v-if="false">
 		<p>LGS Vofi</p>
-		<P>Wann? 03.02.2023</P>
+		<p>Wann? 03.02.2023</p>
 		<p>Wo? <a href="https://goo.gl/maps/2RHjdPRwuRxREx5J9">Am Sportplatz 3, 64839 Münster</a></p>
 		<p>Bitte denkt an euren Ausweis und euer Ticket.</p>
 		<p>Wenn ihr noch nicht volljährig seid, müsst ihr auch einen <a href="https://muttizettel.net/">Muttizettel</a> haben.</p>

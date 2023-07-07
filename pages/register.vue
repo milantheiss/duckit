@@ -1,23 +1,23 @@
 <template>
-	<div class="sm:w-[460px]">
-		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-lg text-left">
+	<div class="md:w-120 sm:w-[430px]">
+		<div class="bg-white px-6 py-6 rounded-lg drop-shadow-md w-full flex flex-col">
 			<div v-show="!checkDetails && !showConfirmation">
 				<h1 class="text-xl sm:text-2xl font-bold mb-6">Tickets registrieren</h1>
 
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">Vorname:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3 hidden sm:block">Vorname:</p>
 					<TextInput v-model="dataStore.buyer.firstname" placeholder="Vorname"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray " ref="fnameInput"></TextInput>
+						class="sm:w-fit text-base sm:text-lg font-normal text-light-gray " ref="fnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">Nachname:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3 hidden sm:block">Nachname:</p>
 					<TextInput v-model="dataStore.buyer.lastname" placeholder="Nachname"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="lnameInput"></TextInput>
+						class="sm:w-fit text-base sm:text-lg font-normal text-light-gray" ref="lnameInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-3">
-					<p class="text-base sm:text-lg font-normal text-light-gray mr-3">E-Mail:</p>
+					<p class="text-base sm:text-lg font-normal text-light-gray mr-3 hidden sm:block">E-Mail:</p>
 					<TextInput v-model="dataStore.buyer.email" type="email" placeholder="E-Mail"
-						class="w-fit text-base sm:text-lg font-normal text-light-gray" ref="emailInput"></TextInput>
+						class="sm:w-fit text-base sm:text-lg font-normal text-light-gray" ref="emailInput"></TextInput>
 				</div>
 				<div class="flex justify-between items-center mb-6">
 					<p class="text-base sm:text-lg font-normal text-light-gray">Anzahl Tickets:</p>
@@ -25,7 +25,7 @@
 						class="w-[90px] text-base sm:text-lg font-normal text-light-gray" placeholder="1"></NumberInput>
 				</div>
 				<ErrorMessage ref="inputViewError" class="mb-6"></ErrorMessage>
-				<div class="flex justify-between items-center sm:mx-6">
+				<div class="flex justify-between items-center sm:mx-6 gap-6">
 					<button
 						class="justify-center rounded-lg drop-shadow-lg border border-transparent bg-gray-500 py-1.5 px-6 text-lg font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
 						@click="cancel()">

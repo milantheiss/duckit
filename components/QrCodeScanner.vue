@@ -2,7 +2,7 @@
     <div>
         <div v-show="!isLoading">
             <video poster="data:image/gif,AAAA" ref="scanner"
-                class="object-cover rounded-lg sm:w-[500px] h-[500px]"></video>
+                class="object-cover rounded-lg sm:w-[500px] h-[300px] sm:h-[500px]"></video>
         </div>
     </div>
 </template>
