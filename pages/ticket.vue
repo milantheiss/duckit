@@ -111,7 +111,7 @@ async function loadTicket(code) {
 			.from('tickets')
 			.select()
 			.eq("ticketCode", code)
-			.eq("event", runtimeConfig.EVENT_ID)
+			.eq("event", runtimeConfig.public.EVENT_ID)
 			.maybeSingle()
 
 		if (!data) {

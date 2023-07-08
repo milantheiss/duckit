@@ -188,7 +188,7 @@ async function generateTickets() {
 	}
 
 	const tickets = new Array(amount).fill({
-		event: runtimeConfig.EVENT_ID,
+		event: runtimeConfig.public.EVENT_ID,
 		buyer: buyer.id,
 		createdBy: (await $supabase.auth.getSession()).data.session.user.id
 	})
